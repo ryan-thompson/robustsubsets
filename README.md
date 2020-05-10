@@ -1,9 +1,22 @@
 
+
+
 # robustsubsets
 
 ## Overview
 
 An R implementation of robust subset selection as described here.
+
+Robust subset selection is a robust version of the classic best subset
+selection estimator, and is defined by the constrained least squares
+problem:
+
+![](man/figures/Tex2Img_1589074386.png)<!-- -->
+
+Robust subsets seeks out the best subset of predictors and observations
+and performs a least squares fit on this subset. The number of
+predictors used in the fit is controlled by the parameter `k` and the
+observations by the parameter `h`.
 
 ## Installation
 
@@ -19,30 +32,26 @@ devtools::install_github("ryan-thompson/robustsubsets")
 
 ## Usage
 
-Robust subset selection is a robust version of the classic best subset
-selection estimator. Robust subsets seeks out the best subset of
-predictors and observations and performs a least squares fit on this
-subset. The number of predictors used by the estimator is controlled by
-the parameter k, and the observations by the parameter h.
+The `rss` function is the primary function for robust subset selection -
+it calls `rss.fit` and `rss.cv` to fit and cross-validate the model over
+various values of `k` and `h`.
 
 ``` r
 library(robustsubsets)
 
-# Set simulation parameters
+# Generate training data with 10% contamination
 set.seed(1)
 n <- 100
 p <- 10
 p0 <- 5
 n.c <- 10
-
-# Generate training data with 10% contamination
 beta <- c(rep(1, p0), rep(0, p - p0))
 X <- matrix(rnorm(n * p), n, p)
 e <- rnorm(n, c(rep(10, n.c), rep(0, n - n.c)))
 y <- X %*% beta + e
 
 # Fit with k=0,...,10 and h=90,100
-fit <- rss(X, y, k = 0:10, h = c(90, 100), mio = F)
+fit <- rss(X, y, k = 0:10, h = c(90, 100))
 
 # Plot coefficient profiles
 plot(fit, type = 'profile')
