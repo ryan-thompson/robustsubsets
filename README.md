@@ -5,13 +5,14 @@
 
 ## Overview
 
-An R implementation of robust subset selection as described here.
+An R implementation of robust subset selection as described
+[here](https://arxiv.org/abs/2005.08217).
 
-Robust subset selection is a robust version of the classic best subset
+Robust subset selection is a robust adaption of the classic best subset
 selection estimator, and is defined by the constrained least squares
 problem:
 
-![](man/figures/Tex2Img_1589074386.png)<!-- -->
+![](man/figures/README-equation.png)<!-- -->
 
 Robust subsets seeks out the best subset of predictors and observations
 and performs a least squares fit on this subset. The number of
@@ -32,7 +33,7 @@ devtools::install_github("ryan-thompson/robustsubsets")
 
 ## Usage
 
-The `rss` function is the primary function for robust subset selection -
+The `rss` function is the primary function for robust subset selection,
 it calls `rss.fit` and `rss.cv` to fit and cross-validate the model over
 various values of `k` and `h`.
 
@@ -76,5 +77,5 @@ predict(fit, X)
 
 ## Documentation
 
-See for [robustsubsets\_1.0.0.pdf](robustsubsets_1.0.0.pdf) for
+See [robustsubsets\_1.0.0.pdf](robustsubsets_1.0.0.pdf) for
 documentation.
