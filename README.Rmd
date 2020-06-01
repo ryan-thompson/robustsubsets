@@ -19,8 +19,7 @@ defined by the constrained least squares problem:
 
 ![](man/figures/README-equation.png)<!-- -->
 
-Robust subsets seeks out the best subset of predictors and observations and performs a least squares fit on 
-this subset. The number of predictors used in the fit is controlled by the parameter `k` and the 
+Robust subsets seeks out the best subset of predictors and observations and performs a least squares fit on this subset. The number of predictors used in the fit is controlled by the parameter `k` and the 
 observations by the parameter `h`.
 
 ## Installation

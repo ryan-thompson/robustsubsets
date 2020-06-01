@@ -24,7 +24,7 @@ globalVariables('fold') # Used in parallel for loop, to pass build checks
 #' @param n.cv the number of times to repeat cross-validation; the results are averaged
 #' @param n.cores the number of cores to use in cross-validation; by default all cores are used
 #' @param cv.objective the cross-validation objective function; by default trimmed mean square
-#' prediction error with the trimming parameter equal to \code{min(h/n)}
+#' prediction error with 25 percent trimming
 #' @param ... any other arguments
 #'
 #' @return An object of class \code{rss.cv}; a list with the following components:

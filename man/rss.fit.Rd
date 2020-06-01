@@ -67,12 +67,10 @@ output is true then the number of iterations required for convergence will be pr
 }
 \value{
 An object of class \code{rss.fit}; a list with the following components:
-\item{beta}{a 3d array of estimated regression coefficients; each row corresponds to an estimate
-of the coefficient vector; the columns correspond to different \code{k} and the matrices to
-different \code{h}}
-\item{eta}{a 3d array of estimated residual outliers; each row corresponds to an estimate of the
-residual outlier vector; the columns correspond to different \code{k} and the matrices to
-different \code{h}}
+\item{beta}{a 3d array of estimated regression coefficients; each column of regression
+ coefficients corresponds to fixed value of \code{k} and each matrix to fixed value of \code{h}}
+\item{eta}{a 3d array of estimated residual outliers; each column of residual outliers
+corresponds to a fixed value of \code{k} and each matrix to fixed value of \code{h}}
 \item{objval}{a matrix with the objective function values; each row corresponds to a value for
 different \code{k} and each column to a value for different \code{h}}
 \item{k}{the value of \code{k} that was passed in}

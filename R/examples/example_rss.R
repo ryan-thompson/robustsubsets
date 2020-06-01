@@ -12,8 +12,8 @@ e <- rnorm(n, c(rep(10, n.c), rep(0, n - n.c)))
 y <- X %*% beta + e
 
 # Fit best/robust subset selection models
-fit.bss <- bss(X, y, n.core = 1)
-fit.rss <- rss(X, y, n.core = 1)
+fit.bss <- bss(X, y, n.cores = 1)
+fit.rss <- rss(X, y, n.cores = 1)
 
 # Extract model coefficients
 bss.beta <- coef(fit.bss)

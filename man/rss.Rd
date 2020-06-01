@@ -37,14 +37,14 @@ An object of class \code{rss}; a list with the following components:
 \item{fit}{the output from \code{rss.fit}; see documentation}
 }
 \description{
-Fits a sequence of robust subset selection model and cross-validates the prediction
+Fits a sequence of robust subset selection models and cross-validates the prediction
 error from these models.
 }
 \details{
 This function fits a sequence of models and cross-validates the prediction
 error associated with these models. In the interest of speed, these steps are carried out using
 heuristic optimisation methods. The parameters that produce the lowest cv error are run through
-the mixed-integer solver which (given sufficient time) will converge to a global minimum. \cr
+the mixed-integer solver which (given sufficient time) will find a global minimiser. \cr
 See \code{rss.fit} and \code{rss.cv} for further options controlling the model fit and
 cross-validation.
 }
@@ -63,8 +63,8 @@ e <- rnorm(n, c(rep(10, n.c), rep(0, n - n.c)))
 y <- X \%*\% beta + e
 
 # Fit best/robust subset selection models
-fit.bss <- bss(X, y, n.core = 1)
-fit.rss <- rss(X, y, n.core = 1)
+fit.bss <- bss(X, y, n.cores = 1)
+fit.rss <- rss(X, y, n.cores = 1)
 
 # Extract model coefficients
 bss.beta <- coef(fit.bss)

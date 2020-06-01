@@ -37,7 +37,7 @@ to 20}
 \item{n.cores}{the number of cores to use in cross-validation; by default all cores are used}
 
 \item{cv.objective}{the cross-validation objective function; by default trimmed mean square
-prediction error with the trimming parameter equal to \code{min(h/n)}}
+prediction error with 25 percent trimming}
 
 \item{...}{any other arguments}
 }

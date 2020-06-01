@@ -6,7 +6,7 @@
 #'
 #' @author Ryan Thompson <ryan.thompson@monash.edu>
 #'
-#' @description Fits a sequence of robust subset selection model and cross-validates the prediction
+#' @description Fits a sequence of robust subset selection models and cross-validates the prediction
 #' error from these models.
 #'
 #' @param X a matrix of predictors
@@ -26,7 +26,7 @@
 #' @details This function fits a sequence of models and cross-validates the prediction
 #' error associated with these models. In the interest of speed, these steps are carried out using
 #' heuristic optimisation methods. The parameters that produce the lowest cv error are run through
-#' the mixed-integer solver which (given sufficient time) will converge to a global minimum. \cr
+#' the mixed-integer solver which (given sufficient time) will find a global minimiser. \cr
 #' See \code{rss.fit} and \code{rss.cv} for further options controlling the model fit and
 #' cross-validation.
 #'
