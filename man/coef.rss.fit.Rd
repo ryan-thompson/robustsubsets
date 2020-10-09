@@ -4,7 +4,7 @@
 \alias{coef.rss.fit}
 \title{Coefficient function for rss.fit object}
 \usage{
-\method{coef}{rss.fit}(object, k, h, ...)
+\method{coef}{rss.fit}(object, k = NULL, h = NULL, ...)
 }
 \arguments{
 \item{object}{an object of class \code{rss.fit}}
@@ -16,7 +16,7 @@
 \item{...}{any other arguments}
 }
 \value{
-A vector of coefficients.
+An array of coefficients.
 }
 \description{
 Extracts coefficients for a given parameter pair \code{(k,h)}.

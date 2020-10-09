@@ -23,7 +23,7 @@ rob.scale <- function(X, center = T, scale = T) {
 }
 
 # Trimmed mean square prediction error
-tmspe <- function(x, alpha = 0.25) mean(sort(x ^ 2)[1:floor(length(x) * (1 - alpha))])
+tmspe <- function(x, alpha = 0.25) mean(sort(x ^ 2)[1:round(length(x) * (1 - alpha))])
 
 # Mean square prediction error
 mspe <- function(x) mean(x ^ 2)

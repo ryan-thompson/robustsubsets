@@ -28,7 +28,7 @@ license at <https://www.gurobi.com/>.
 To install robustsubsets from GitHub, run the following code.
 
 ``` r
-devtools::install_github("ryan-thompson/robustsubsets")
+devtools::install_github('ryan-thompson/robustsubsets')
 ```
 
 ## Usage
@@ -40,19 +40,15 @@ various values of `k` and `h`.
 ``` r
 library(robustsubsets)
 
-# Generate training data with 10% contamination
+# Generate training data with contaminated predictor matrix
 set.seed(1)
-n <- 100
-p <- 10
-p0 <- 5
-n.c <- 10
-beta <- c(rep(1, p0), rep(0, p - p0))
-X <- matrix(rnorm(n * p), n, p)
-e <- rnorm(n, c(rep(10, n.c), rep(0, n - n.c)))
-y <- X %*% beta + e
+beta <- c(rep(1, 5), rep(0, 5))
+X <- matrix(rnorm(100 * 10), 100, 10)
+y <- X %*% beta + rnorm(100)
+X[1:5, ] <- matrix(rnorm(5 * 10, mean = 10), 5, 10)
 
 # Fit with k=0,...,10 and h=90,100
-fit <- rss(X, y, k = 0:10, h = c(90, 100))
+fit <- rss(X, y, k = 0:10, h = function(n) round(c(0.90, 1.00) * n))
 
 # Plot coefficient profiles
 plot(fit, type = 'profile')

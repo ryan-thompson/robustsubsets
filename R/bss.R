@@ -17,15 +17,20 @@
 #' @param k the number of predictors to minimise sum of squares over; by default a sequence from 0
 #' to 20
 #' @param int a logical indicating whether to include an intercept
-#' @param mio a logical indicating whether to run the mixed-integer solver
+#' @param mio one of 'min', 'all', or 'none' indicating whether to run the mixed-integer solver on
+#' the \code{k} that minimises the cv error, all \code{k}, or none at all
 #' @param ... any other arguments
 #'
 #' @return See documentation for the \code{rss} function.
 #'
+#' @example R/examples/example_bss.R
+#'
 #' @export
 
-bss <- function(X, y, k = (!int):min(nrow(X) - int, ncol(X), 20), int = T, mio = T, ...) {
+bss <- function(X, y,
+                k = 0:min(nrow(X) - int, ncol(X), 20),
+                int = T, mio = 'min', ...) {
 
-  rss(X, y, k, nrow(X), int, mio, robust = F, cv.objective = mspe, ...)
+  rss(X, y, k, function(n) n, int, mio, robust = F, cv.objective = mspe, ...)
 
 }

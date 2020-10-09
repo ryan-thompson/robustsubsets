@@ -16,7 +16,8 @@
 #' @param h the number of observations to minimise sum of squares over; by default a sequence from
 #' 75 to 100 percent of sample size (in increments of 5 percent)
 #' @param int a logical indicating whether to include an intercept
-#' @param mio a logical indicating whether to run the mixed-integer solver
+#' @param mio one of 'min', 'all', or 'none' indicating whether to run the mixed-integer solver on
+#' the \code{k} and \code{h} that minimise the cv error, all \code{k} and \code{h}, or none at all
 #' @param ... any other arguments (see \code{rss.fit} and \code{rss.cv})
 #'
 #' @return An object of class \code{rss}; a list with the following components:
@@ -35,16 +36,24 @@
 #' @export
 
 rss <- function(X, y,
-                k = (!int):min(nrow(X) - int, ncol(X), 20), h = floor(seq(0.75, 1, 0.05) * nrow(X)),
-                int = T, mio = T, ...) {
+                k = 0:min(nrow(X) - int, ncol(X), 20),
+                h = function(n) round(seq(0.75, 1, 0.05) * n),
+                int = T, mio = 'min', ...) {
 
   # Run cross-validation
   cv <- rss.cv(X, y, k, h, int, ...)
 
   # Fit the models
-  k.mio <- ifelse(mio, cv$min.k, NA)
-  h.mio <- ifelse(mio, cv$min.h, NA)
-  fit <- rss.fit(X, y, k, h, int, k.mio, h.mio, ...)
+  k.mio <- NULL
+  h.mio <- NULL
+  if (mio == 'min') {
+    k.mio <- cv$k.min
+    h.mio <- cv$h.min
+  } else if (mio == 'all') {
+    k.mio <- k
+    h.mio <- h(nrow(X))
+  }
+  fit <- rss.fit(X, y, k, h(nrow(X)), int, k.mio, h.mio, ...)
 
   # Save results
   result <- list()
@@ -67,13 +76,13 @@ rss <- function(X, y,
 #' @description Extracts coefficients for a given parameter pair \code{(k,h)}.
 #'
 #' @param object an object of class \code{rss}
-#' @param k the number of predictors indexing the desired fit; 'min.k' uses best \code{k} from
+#' @param k the number of predictors indexing the desired fit; 'k.min' uses best \code{k} from
 #' cross-validation
-#' @param h the number of observations indexing the desired fit; 'min.h' uses best \code{h} from
+#' @param h the number of observations indexing the desired fit; 'h.min' uses best \code{h} from
 #' cross-validation
 #' @param ... any other arguments
 #'
-#' @return A vector of coefficients.
+#' @return An array of coefficients.
 #'
 #' @method coef rss
 #'
@@ -81,11 +90,11 @@ rss <- function(X, y,
 #'
 #' @importFrom stats "coef"
 
-coef.rss <- function(object, k = 'min.k', h = 'min.h',...) {
+coef.rss <- function(object, k = 'k.min', h = 'h.min', ...) {
 
-  if (k == 'min.k') k <- object$cv$min.k
-  if (h == 'min.h') h <- object$cv$min.h
-  coef(object$fit, k = k, h = h, ...)
+  if (!is.null(k)) if (k == 'k.min') k <- object$cv$k.min
+  if (!is.null(h)) if (h == 'h.min') h <- object$cv$h.min
+  coef.rss.fit(object$fit, k = k, h = h, ...)
 
 }
 
@@ -101,13 +110,13 @@ coef.rss <- function(object, k = 'min.k', h = 'min.h',...) {
 #'
 #' @param object an object of class \code{rss}
 #' @param X.new a matrix of new values for the predictors
-#' @param k the number of predictors indexing the desired fit; 'min.k' uses best \code{k} from
+#' @param k the number of predictors indexing the desired fit; 'k.min' uses best \code{k} from
 #' cross-validation
-#' @param h the number of observations indexing the desired fit; 'min.h' uses best \code{h} from
+#' @param h the number of observations indexing the desired fit; 'h.min' uses best \code{h} from
 #' cross-validation
 #' @param ... any other arguments
 #'
-#' @return A vector of predictions.
+#' @return An array of predictions.
 #'
 #' @method predict rss
 #'
@@ -115,14 +124,11 @@ coef.rss <- function(object, k = 'min.k', h = 'min.h',...) {
 #'
 #' @importFrom stats "predict"
 
-predict.rss <- function(object, X.new, k = 'min.k', h = 'min.h', ...) {
+predict.rss <- function(object, X.new, k = 'k.min', h = 'h.min', ...) {
 
-  X.new <- as.matrix(X.new)
-  if (object$fit$int) {
-    cbind(1, X.new) %*% coef.rss(object, k, h, ...)
-  } else {
-    X.new %*% coef.rss(object, k, h, ...)
-  }
+  if (!is.null(k)) if (k == 'k.min') k <- object$cv$k.min
+  if (!is.null(h)) if (h == 'h.min') h <- object$cv$h.min
+  predict.rss.fit(object$fit, X.new, k = k, h = h, ...)
 
 }
 
@@ -152,9 +158,9 @@ predict.rss <- function(object, X.new, k = 'min.k', h = 'min.h', ...) {
 plot.rss <- function(x, type = 'cv', ...) {
 
   if (type == 'profile') {
-    plot(x$fit)
+    plot.rss.fit(x$fit)
   } else if (type == 'cv') {
-    plot(x$cv)
+    plot.rss.cv(x$cv)
   }
 
 }

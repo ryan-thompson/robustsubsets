@@ -7,10 +7,10 @@
 rss(
   X,
   y,
-  k = (!int):min(nrow(X) - int, ncol(X), 20),
-  h = floor(seq(0.75, 1, 0.05) * nrow(X)),
+  k = 0:min(nrow(X) - int, ncol(X), 20),
+  h = function(n) round(seq(0.75, 1, 0.05) * n),
   int = T,
-  mio = T,
+  mio = "min",
   ...
 )
 }
@@ -27,7 +27,8 @@ to 20}
 
 \item{int}{a logical indicating whether to include an intercept}
 
-\item{mio}{a logical indicating whether to run the mixed-integer solver}
+\item{mio}{one of 'min', 'all', or 'none' indicating whether to run the mixed-integer solver on
+the \code{k} and \code{h} that minimise the cv error, all \code{k} and \code{h}, or none at all}
 
 \item{...}{any other arguments (see \code{rss.fit} and \code{rss.cv})}
 }
@@ -49,56 +50,28 @@ See \code{rss.fit} and \code{rss.cv} for further options controlling the model f
 cross-validation.
 }
 \examples{
-# Set simulation parameters
+# Generate training data with mixture error
 set.seed(1)
 n <- 100
 p <- 10
 p0 <- 5
-n.c <- 10
-
-# Generate training data with mixture error
+n.c <- 5
 beta <- c(rep(1, p0), rep(0, p - p0))
 X <- matrix(rnorm(n * p), n, p)
 e <- rnorm(n, c(rep(10, n.c), rep(0, n - n.c)))
 y <- X \%*\% beta + e
 
-# Fit best/robust subset selection models
-fit.bss <- bss(X, y, n.cores = 1)
-fit.rss <- rss(X, y, n.cores = 1)
+# Fit robust subset selection models
+# Run the mixed-integer solver on the (k,h) that minimises the cv error
+fit <- rss(X, y, k = 0:10, h = function(n) round(c(0.95, 1.00) * n), mio = 'min', n.core = 1)
 
-# Extract model coefficients
-bss.beta <- coef(fit.bss)
-rss.beta <- coef(fit.rss)
+# Extract model coefficients and generate predictions
+coef(fit)
+predict(fit, X)
 
-# Check estimation error
-ee.bss <- norm(bss.beta - c(0, beta), '2')
-ee.rss <- norm(rss.beta - c(0, beta), '2')
-cat('Best subsets estimation error:', ee.bss, '\n')
-cat('Robust subsets estimation error:', ee.rss, '\n')
-
-# Plot coefficient profiles
-plot(fit.rss, type = 'profile')
-# Each facet corresponds to a different value of h
-
-# Plot cross-validation results
-plot(fit.rss, type = 'cv')
-# Each line corresponds to a different value of h
-
-# Generate test data
-X.test <- matrix(rnorm(n * p), n, p)
-e.test <- rnorm(n)
-y.test <- X.test \%*\% beta + e.test
-
-# Make model predictions (using best parameters from cv)
-pred.bss <- predict(fit.bss, X.test)
-pred.rss <- predict(fit.rss, X.test)
-
-# Compute prediction error
-pe.bss <- 1 / n * norm(y.test - pred.bss, '2') ^ 2
-pe.rss <- 1 / n * norm(y.test - pred.rss, '2') ^ 2
-cat('Best subsets prediction error:', pe.bss, '\n')
-cat('Robust subsets prediction error:', pe.rss, '\n')
-
+# Plot coefficient profiles and cross-validation results
+plot(fit, type = 'profile')
+plot(fit, type = 'cv')
 }
 \author{
 Ryan Thompson <ryan.thompson@monash.edu>

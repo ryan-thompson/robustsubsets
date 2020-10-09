@@ -4,21 +4,21 @@
 \alias{coef.rss}
 \title{Coefficient function for rss object}
 \usage{
-\method{coef}{rss}(object, k = "min.k", h = "min.h", ...)
+\method{coef}{rss}(object, k = "k.min", h = "h.min", ...)
 }
 \arguments{
 \item{object}{an object of class \code{rss}}
 
-\item{k}{the number of predictors indexing the desired fit; 'min.k' uses best \code{k} from
+\item{k}{the number of predictors indexing the desired fit; 'k.min' uses best \code{k} from
 cross-validation}
 
-\item{h}{the number of observations indexing the desired fit; 'min.h' uses best \code{h} from
+\item{h}{the number of observations indexing the desired fit; 'h.min' uses best \code{h} from
 cross-validation}
 
 \item{...}{any other arguments}
 }
 \value{
-A vector of coefficients.
+An array of coefficients.
 }
 \description{
 Extracts coefficients for a given parameter pair \code{(k,h)}.

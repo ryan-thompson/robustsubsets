@@ -2,21 +2,20 @@
 % Please edit documentation in R/rss_fit.R
 \name{rss.fit}
 \alias{rss.fit}
-\title{Robust subset selection}
+\title{Fit a robust subset selection model}
 \usage{
 rss.fit(
   X,
   y,
-  k = (!int):min(nrow(X) - int, ncol(X), 20),
-  h = floor(seq(0.75, 1, 0.05) * nrow(X)),
+  k = 0:min(nrow(X) - int, ncol(X), 20),
+  h = round(seq(0.75, 1, 0.05) * nrow(X)),
   int = T,
-  k.mio = NA,
-  h.mio = NA,
-  time = 300,
-  tau = 2,
-  focus = 0,
-  log = F,
-  output = T,
+  k.mio = NULL,
+  h.mio = NULL,
+  time = 60,
+  tau = 1.25,
+  output = F,
+  params = NULL,
   robust = T,
   max.iter.ns = 100,
   max.iter.gd = 1e+05,
@@ -46,12 +45,10 @@ default a sequence from 0 to 20}
 \item{tau}{a positive number greater than 1 used to tighten variable bounds in the mixed-integer
 formulation; small values give quicker run times but can also exclude the optimal solution}
 
-\item{focus}{an integer in \{0,1,2,3\} used to tune the high level strategy of the mixed-integer
-solver}
-
-\item{log}{a logical indicating whether to save the mixed-integer solver output}
-
 \item{output}{a logical indicating whether to print status updates}
+
+\item{params}{an optional list of additional Gurobi parameters (the parameters Time and OutputFlag
+are controlled by \code{time} and \code{output})}
 
 \item{robust}{a logical indicating whether to standardise the data robustly; median/mad for true
 and mean/sd for false}
@@ -67,10 +64,11 @@ output is true then the number of iterations required for convergence will be pr
 }
 \value{
 An object of class \code{rss.fit}; a list with the following components:
-\item{beta}{a 3d array of estimated regression coefficients; each column of regression
+\item{beta}{an array of estimated regression coefficients; each column of regression
  coefficients corresponds to fixed value of \code{k} and each matrix to fixed value of \code{h}}
-\item{eta}{a 3d array of estimated residual outliers; each column of residual outliers
-corresponds to a fixed value of \code{k} and each matrix to fixed value of \code{h}}
+\item{weights}{an array of binary weights; weights equal to one correspond to good observations
+selected for inclusion in the least squares fit; each column of weights corresponds to fixed
+value of \code{k} and each matrix to fixed value of \code{h}}
 \item{objval}{a matrix with the objective function values; each row corresponds to a value for
 different \code{k} and each column to a value for different \code{h}}
 \item{k}{the value of \code{k} that was passed in}
@@ -84,13 +82,32 @@ and mixed-integer optimisation (mio).
 \details{
 The function first computes solutions over all combinations of \code{k} and \code{h}
  using heuristics. The solutions can then be refined further using the mixed-integer solver.
-The values that the solver operates on are specified by the \code{k.mio} and \code{h.mio}
+The parameters that the solver operates on are specified by the \code{k.mio} and \code{h.mio}
 parameters, which must be subsets of \code{k} and \code{h}. \cr
-The \code{focus} parameter tells the mio solver whether to focus on improving the upper
-bound, lower bound, or to balance both goals. See
-https://www.gurobi.com/documentation/9.0/refman/mipfocus.html. \cr
 If robust is set to true and the median of any predictor is zero, then the data cannot be
 standardised (the median absolute deviation is undefined) and an error message will be returned.
+}
+\examples{
+# Generate training data with mixture error
+set.seed(1)
+n <- 100
+p <- 10
+p0 <- 5
+n.c <- 5
+beta <- c(rep(1, p0), rep(0, p - p0))
+X <- matrix(rnorm(n * p), n, p)
+e <- rnorm(n, c(rep(10, n.c), rep(0, n - n.c)))
+y <- X \%*\% beta + e
+
+# Fit robust subset selection models and run the mixed-integer solver
+fit <- rss.fit(X, y, k = 0:p, h = n - n.c, k.mio = 0:p, h.mio = n - n.c)
+
+# Extract model coefficients and generate predictions
+coef(fit, k = p0, h = n - n.c)
+predict(fit, X, k = p0, h = n - n.c)
+
+# Plot coefficient profiles
+plot(fit)
 }
 \author{
 Ryan Thompson <ryan.thompson@monash.edu>

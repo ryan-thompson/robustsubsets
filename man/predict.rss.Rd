@@ -4,23 +4,23 @@
 \alias{predict.rss}
 \title{Predict function for rss object}
 \usage{
-\method{predict}{rss}(object, X.new, k = "min.k", h = "min.h", ...)
+\method{predict}{rss}(object, X.new, k = "k.min", h = "h.min", ...)
 }
 \arguments{
 \item{object}{an object of class \code{rss}}
 
 \item{X.new}{a matrix of new values for the predictors}
 
-\item{k}{the number of predictors indexing the desired fit; 'min.k' uses best \code{k} from
+\item{k}{the number of predictors indexing the desired fit; 'k.min' uses best \code{k} from
 cross-validation}
 
-\item{h}{the number of observations indexing the desired fit; 'min.h' uses best \code{h} from
+\item{h}{the number of observations indexing the desired fit; 'h.min' uses best \code{h} from
 cross-validation}
 
 \item{...}{any other arguments}
 }
 \value{
-A vector of predictions.
+An array of predictions.
 }
 \description{
 Generate predictions given new data using a given parameter pair \code{(k,h)}.

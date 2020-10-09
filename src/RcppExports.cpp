@@ -7,20 +7,20 @@
 using namespace Rcpp;
 
 // pbgd
-List pbgd(arma::mat X, arma::vec y, arma::vec beta, arma::vec eta, int k, int h, double step, int max_iter, double tol);
+Rcpp::List pbgd(const arma::mat& X, const arma::vec& y, arma::vec beta, arma::vec eta, const int k, const int h, const double step, const int max_iter, const double tol);
 RcppExport SEXP _robustsubsets_pbgd(SEXP XSEXP, SEXP ySEXP, SEXP betaSEXP, SEXP etaSEXP, SEXP kSEXP, SEXP hSEXP, SEXP stepSEXP, SEXP max_iterSEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< arma::vec >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type eta(etaSEXP);
-    Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    Rcpp::traits::input_parameter< int >::type h(hSEXP);
-    Rcpp::traits::input_parameter< double >::type step(stepSEXP);
-    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
-    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< const int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const int >::type h(hSEXP);
+    Rcpp::traits::input_parameter< const double >::type step(stepSEXP);
+    Rcpp::traits::input_parameter< const int >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< const double >::type tol(tolSEXP);
     rcpp_result_gen = Rcpp::wrap(pbgd(X, y, beta, eta, k, h, step, max_iter, tol));
     return rcpp_result_gen;
 END_RCPP

@@ -4,7 +4,7 @@
 \alias{predict.rss.fit}
 \title{Predict function for rss.fit object}
 \usage{
-\method{predict}{rss.fit}(object, X.new, k, h, ...)
+\method{predict}{rss.fit}(object, X.new, k = NULL, h = NULL, ...)
 }
 \arguments{
 \item{object}{an object of class \code{rss.fit}}
@@ -18,7 +18,7 @@
 \item{...}{any other arguments}
 }
 \value{
-A vector of predictions.
+An array of predictions.
 }
 \description{
 Generate predictions for new data using a given parameter pair \code{(k,h)}.

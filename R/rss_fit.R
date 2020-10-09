@@ -3,7 +3,7 @@
 # mixed-integer optimisation and projected block-coordinate gradient descent, respectively.
 #==================================================================================================#
 
-#' @title Robust subset selection
+#' @title Fit a robust subset selection model
 #'
 #' @author Ryan Thompson <ryan.thompson@monash.edu>
 #'
@@ -22,10 +22,9 @@
 #' @param time a time limit in seconds on each call to the mixed-integer solver
 #' @param tau a positive number greater than 1 used to tighten variable bounds in the mixed-integer
 #' formulation; small values give quicker run times but can also exclude the optimal solution
-#' @param focus an integer in \{0,1,2,3\} used to tune the high level strategy of the mixed-integer
-#' solver
-#' @param log a logical indicating whether to save the mixed-integer solver output
 #' @param output a logical indicating whether to print status updates
+#' @param params an optional list of additional Gurobi parameters (the parameters Time and OutputFlag
+#' are controlled by \code{time} and \code{output})
 #' @param robust a logical indicating whether to standardise the data robustly; median/mad for true
 #' and mean/sd for false
 #' @param max.iter.ns the maximum number of neighbourhood search iterations to perform; if
@@ -35,10 +34,11 @@
 #' @param ... any other arguments
 #'
 #' @return An object of class \code{rss.fit}; a list with the following components:
-#' \item{beta}{a 3d array of estimated regression coefficients; each column of regression
+#' \item{beta}{an array of estimated regression coefficients; each column of regression
 #'  coefficients corresponds to fixed value of \code{k} and each matrix to fixed value of \code{h}}
-#' \item{eta}{a 3d array of estimated residual outliers; each column of residual outliers
-#' corresponds to a fixed value of \code{k} and each matrix to fixed value of \code{h}}
+#' \item{weights}{an array of binary weights; weights equal to one correspond to good observations
+#' selected for inclusion in the least squares fit; each column of weights corresponds to fixed
+#' value of \code{k} and each matrix to fixed value of \code{h}}
 #' \item{objval}{a matrix with the objective function values; each row corresponds to a value for
 #' different \code{k} and each column to a value for different \code{h}}
 #' \item{k}{the value of \code{k} that was passed in}
@@ -47,13 +47,12 @@
 #'
 #' @details The function first computes solutions over all combinations of \code{k} and \code{h}
 #'  using heuristics. The solutions can then be refined further using the mixed-integer solver.
-#' The values that the solver operates on are specified by the \code{k.mio} and \code{h.mio}
+#' The parameters that the solver operates on are specified by the \code{k.mio} and \code{h.mio}
 #' parameters, which must be subsets of \code{k} and \code{h}. \cr
-#' The \code{focus} parameter tells the mio solver whether to focus on improving the upper
-#' bound, lower bound, or to balance both goals. See
-#' https://www.gurobi.com/documentation/9.0/refman/mipfocus.html. \cr
 #' If robust is set to true and the median of any predictor is zero, then the data cannot be
 #' standardised (the median absolute deviation is undefined) and an error message will be returned.
+#'
+#' @example R/examples/example_rss_fit.R
 #'
 #' @export
 #'
@@ -61,10 +60,11 @@
 #' @importFrom Matrix "bdiag"
 #' @importFrom Matrix "Diagonal"
 
-rss.fit <- function(X, y, k = (!int):min(nrow(X) - int, ncol(X), 20),
-                    h = floor(seq(0.75, 1, 0.05) * nrow(X)), int = T, k.mio = NA, h.mio = NA,
-                    time = 300, tau = 2, focus = 0, log = F, output = T, robust = T,
-                    max.iter.ns = 1e2, max.iter.gd = 1e5, tol = 1e-4, ...) {
+rss.fit <- function(X, y,
+                    k = 0:min(nrow(X) - int, ncol(X), 20), h = round(seq(0.75, 1, 0.05) * nrow(X)),
+                    int = T, k.mio = NULL, h.mio = NULL, time = 60, tau = 1.25, output = F,
+                    params = NULL, robust = T, max.iter.ns = 1e2, max.iter.gd = 1e5, tol = 1e-4,
+                    ...) {
 
   # Preliminaries
   X <- as.matrix(X)
@@ -90,7 +90,7 @@ rss.fit <- function(X, y, k = (!int):min(nrow(X) - int, ncol(X), 20),
 
   # Run neighbourhood search
   if (output) cat ('Running neighbourhood search... \n \n')
-  step <- 1 / norm(crossprod(X), '2')
+  step <- 1 / norm(X, '2') ^ 2
   results <- list(x = array(dim = c(p + n + p + n, n.k, n.h)), objval = array(dim = c(n.k, n.h)))
   for (j in 1:n.h) {
     for (i in 1:n.k) {
@@ -125,14 +125,14 @@ rss.fit <- function(X, y, k = (!int):min(nrow(X) - int, ncol(X), 20),
   }
 
   # Run mio
-  if (!any(is.na(k.mio)) & !any(is.na(h.mio))) {
+  if (!any(is.null(k.mio)) & !any(is.null(h.mio))) {
     if (output) cat('\nRunning mixed-integer optimisation... \n \n')
     for (j in 1:n.h.mio) {
       for (i in 1:n.k.mio) {
         if (k.mio[i] == 0) next
         result <- mio(X, y, k.mio[i], h.mio[j],
                       results$x[, which(k == k.mio[i]), which(h == h.mio[j])],
-                      time, tau, focus, log, output)
+                      time, tau, output, params)
         results$x[, which(k == k.mio[i]), which(h == h.mio[j])] <- result$x[1:(p + n + p + n)]
         results$objval[which(k == k.mio[i]), which(h == h.mio[j])] <- result$objval
       }
@@ -141,7 +141,7 @@ rss.fit <- function(X, y, k = (!int):min(nrow(X) - int, ncol(X), 20),
 
   # Refit the models on the original (unscaled) data
   results.final <- list(beta = array(dim = c(p + int, n.k, n.h)),
-                        eta = array(dim = c(n, n.k, n.h)),
+                        weights = array(dim = c(n, n.k, n.h)),
                         objval = array(dim = c(n.k, n.h)), k = k, h = h, int = int)
   for (j in 1:n.h) {
     for (i in 1:n.k) {
@@ -173,7 +173,7 @@ rss.fit <- function(X, y, k = (!int):min(nrow(X) - int, ncol(X), 20),
       eta[!id.eta] <- 0
       if (int) objval <- f(cbind(1, X.o), y.o, beta, eta) else objval <- f(X.o, y.o, beta, eta)
       results.final$beta[, i, j] <- beta
-      results.final$eta[, i, j] <- eta
+      results.final$weights[, i, j] <- as.numeric(eta == 0)
       results.final$objval[i, j] <- objval
     }
   }
@@ -192,7 +192,7 @@ rss.fit <- function(X, y, k = (!int):min(nrow(X) - int, ncol(X), 20),
 # https://github.com/ryantibs/best-subset
 #==================================================================================================#
 
-mio <- function(X, y, k, h, init, time, tau, focus, log, output) {
+mio <- function(X, y, k, h, init, time, tau, output, params) {
 
   # Preliminaries
   n <- nrow(X)
@@ -222,7 +222,7 @@ mio <- function(X, y, k, h, init, time, tau, focus, log, output) {
   if (form == 1) {
     model$vtype <- c(rep('C', p + n), rep('B', p + n)) # Problem variable x
     model$Q <- 0.5 * bdiag(t(W) %*% W, Matrix(0, p + n, p + n)) # Matrix Q in objective function
-    model$obj <- c(- t(W) %*% y, rep(0, p + n)) # Constant c in objective function
+    model$obj <- c(- t(W) %*% y, rep(0, p + n)) # Vector c in objective function
     model$objcon <- 0.5 * t(y) %*% y # Constant a in objective function
     model$A <- # LHS of constraints
       rbind(
@@ -257,7 +257,7 @@ mio <- function(X, y, k, h, init, time, tau, focus, log, output) {
     Mx <- tau * max(abs(W %*% init[1:(p + n)]))
     model$vtype <- c(rep('C', p + n), rep('B', p + n), rep('C', n)) # Problem variable x
     model$Q <- 0.5 * bdiag(Matrix(0, p + n + p + n, p + n + p + n), Diagonal(n, 1)) # Matrix Q in objective function
-    model$obj <- c(- t(W) %*% y, rep(0, p + n + n)) # Constant c in objective function
+    model$obj <- c(- t(W) %*% y, rep(0, p + n + n)) # Vector c in objective function
     model$objcon <- 0.5 * t(y) %*% y # Constant a in objective function
     model$A <- # LHS of constraints
       rbind(
@@ -277,10 +277,8 @@ mio <- function(X, y, k, h, init, time, tau, focus, log, output) {
   }
 
   # Set the solver parameters
-  params <- list()
+  if (is.null(params)) params <- list()
   params$TimeLimit <- time
-  params$MIPFocus <- focus
-  params$LogFile <- ifelse(log, 'mio_log.txt', '')
   params$OutputFlag <- ifelse(output, 1, 0)
 
   # Solve the model using Gurobi
@@ -305,7 +303,7 @@ mio <- function(X, y, k, h, init, time, tau, focus, log, output) {
 #' @param h the number of observations indexing the desired fit
 #' @param ... any other arguments
 #'
-#' @return A vector of coefficients.
+#' @return An array of coefficients.
 #'
 #' @method coef rss.fit
 #'
@@ -313,10 +311,10 @@ mio <- function(X, y, k, h, init, time, tau, focus, log, output) {
 #'
 #' @importFrom stats "coef"
 
-coef.rss.fit <- function(object, k, h,...) {
+coef.rss.fit <- function(object, k = NULL, h = NULL, ...) {
 
-  index1 <- which(object$k == k)
-  index2 <- which(object$h == h)
+  if (!is.null(k)) index1 <- which(object$k == k) else index1 <- 1:length(object$k)
+  if (!is.null(h)) index2 <- which(object$h == h) else index2 <- 1:length(object$h)
   object$beta[, index1, index2]
 
 }
@@ -337,7 +335,7 @@ coef.rss.fit <- function(object, k, h,...) {
 #' @param h the number of observations indexing the desired fit
 #' @param ... any other arguments
 #'
-#' @return A vector of predictions.
+#' @return An array of predictions.
 #'
 #' @method predict rss.fit
 #'
@@ -345,14 +343,12 @@ coef.rss.fit <- function(object, k, h,...) {
 #'
 #' @importFrom stats "predict"
 
-predict.rss.fit <- function(object, X.new, k, h,...) {
+predict.rss.fit <- function(object, X.new, k = NULL, h = NULL, ...) {
 
   X.new <- as.matrix(X.new)
-  if (object$int) {
-    cbind(1, X.new) %*% coef.rss(object, k, h, ...)
-  } else {
-    X.new %*% coef.rss(object, k, h, ...)
-  }
+  if (object$int) X.new <- cbind(1, X.new)
+  beta <- coef.rss.fit(object, k, h, ...)
+  if (length(dim(beta)) < 3) X.new %*% beta else apply(beta, 2:3, function(beta) X.new %*% beta)
 
 }
 

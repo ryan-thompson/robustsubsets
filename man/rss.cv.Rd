@@ -7,12 +7,12 @@
 rss.cv(
   X,
   y,
-  k = (!int):min(nrow(X) - int, ncol(X), 20),
-  h = floor(seq(0.75, 1, 0.05) * nrow(X)),
+  k = 0:min(nrow(X) - int, ncol(X), 20),
+  h = function(n) round(seq(0.75, 1, 0.05) * n),
   int = T,
   n.fold = 10,
   n.cv = 1,
-  n.cores = parallel::detectCores(),
+  n.core = n.fold * n.cv,
   cv.objective = tmspe,
   ...
 )
@@ -26,7 +26,8 @@ rss.cv(
 to 20}
 
 \item{h}{the number of observations to minimise sum of squares over; by default a sequence from
-75 to 100 percent of sample size (in increments of 5 percent)}
+75 to 100 percent of sample size (in increments of 5 percent); this should be a function of the
+sample size to facilitate cross-validation}
 
 \item{int}{a logical indicating whether to include an intercept}
 
@@ -34,7 +35,8 @@ to 20}
 
 \item{n.cv}{the number of times to repeat cross-validation; the results are averaged}
 
-\item{n.cores}{the number of cores to use in cross-validation; by default all cores are used}
+\item{n.core}{the number of cores to use in cross-validation; by default \code{n.fold} *
+\code{n.cv} cores are used (if available)}
 
 \item{cv.objective}{the cross-validation objective function; by default trimmed mean square
 prediction error with 25 percent trimming}
@@ -45,14 +47,32 @@ prediction error with 25 percent trimming}
 An object of class \code{rss.cv}; a list with the following components:
 \item{mean.cv}{a matrix with the cross-validated values of \code{cv.objective}; each row
 corresponds to a value of \code{k} and each column to a value of \code{h}}
-\item{min.k}{the \code{k} yielding the lowest cross-validated \code{cv.objective}}
-\item{min.h}{the \code{h} yielding the lowest cross-validated \code{cv.objective}}
+\item{k.min}{the \code{k} yielding the lowest cross-validated \code{cv.objective}}
+\item{h.min}{the \code{h} yielding the lowest cross-validated \code{cv.objective}}
 \item{k}{the value of \code{k} that was passed in}
 \item{h}{the value of \code{h} that was passed in}
 }
 \description{
 Does (repeated) \code{K}-fold cross-validation for robust subset selection in
- parallel. To achieve good run time, only uses the heuristics (by default).
+ parallel. In the interest of speed, uses heuristics without the mixed-integer solver.
+}
+\examples{
+# Generate training data with mixture error
+set.seed(1)
+n <- 100
+p <- 10
+p0 <- 5
+n.c <- 5
+beta <- c(rep(1, p0), rep(0, p - p0))
+X <- matrix(rnorm(n * p), n, p)
+e <- rnorm(n, c(rep(10, n.c), rep(0, n - n.c)))
+y <- X \%*\% beta + e
+
+# Cross-validate robust subset selection models
+cv <- rss.cv(X, y, k = 0:10, h = function(n) round(c(0.95, 1.00) * n), n.core = 1)
+
+# Plot cross-validation results
+plot(cv)
 }
 \author{
 Ryan Thompson <ryan.thompson@monash.edu>

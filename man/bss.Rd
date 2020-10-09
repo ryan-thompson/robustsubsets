@@ -4,7 +4,7 @@
 \alias{bss}
 \title{Best subset selection}
 \usage{
-bss(X, y, k = (!int):min(nrow(X) - int, ncol(X), 20), int = T, mio = T, ...)
+bss(X, y, k = 0:min(nrow(X) - int, ncol(X), 20), int = T, mio = "min", ...)
 }
 \arguments{
 \item{X}{a matrix of predictors}
@@ -16,7 +16,8 @@ to 20}
 
 \item{int}{a logical indicating whether to include an intercept}
 
-\item{mio}{a logical indicating whether to run the mixed-integer solver}
+\item{mio}{one of 'min', 'all', or 'none' indicating whether to run the mixed-integer solver on
+the \code{k} that minimises the cv error, all \code{k}, or none at all}
 
 \item{...}{any other arguments}
 }
@@ -28,6 +29,29 @@ Fits a sequence of best subset selection models. This function is just a wrapper
 the \code{rss} function. The function solves the robust subset selection problem with
 \code{h}=\code{n}, using nonrobust measures of location and scale to standardise, as well as a
 nonrobust measure of prediction error in cross-validation.
+}
+\examples{
+# Generate training data
+set.seed(1)
+n <- 100
+p <- 10
+p0 <- 5
+beta <- c(rep(1, p0), rep(0, p - p0))
+X <- matrix(rnorm(n * p), n, p)
+e <- rnorm(n)
+y <- X \%*\% beta + e
+
+# Fit best subset selection models
+# Run the mixed-integer solver on the k that minimises the cv error
+fit <- bss(X, y, k = 0:10, mio = 'min', n.core = 1)
+
+# Extract model coefficients and generate predictions
+coef(fit)
+predict(fit, X)
+
+# Plot coefficient profiles and cross-validation results
+plot(fit, type = 'profile')
+plot(fit, type = 'cv')
 }
 \author{
 Ryan Thompson <ryan.thompson@monash.edu>
