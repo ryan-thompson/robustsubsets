@@ -66,4 +66,4 @@ predict(fit, X)
 
 ## Documentation
 
-See [robustsubsets_1.0.0.pdf](robustsubsets_1.0.0.pdf) for documentation.
+See [robustsubsets_1.0.1.pdf](robustsubsets_1.0.1.pdf) for documentation.
