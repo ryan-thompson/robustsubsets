@@ -25,7 +25,7 @@ You should install Gurobi and the associated R package gurobi before
 installing robustsubsets. Gurobi is available for free under academic
 license at <https://www.gurobi.com/>.
 
-To install robustsubsets from GitHub, run the following code.
+To install robustsubsets from GitHub, run the following code:
 
 ``` r
 devtools::install_github('ryan-thompson/robustsubsets')
@@ -42,10 +42,14 @@ library(robustsubsets)
 
 # Generate training data with contaminated predictor matrix
 set.seed(1)
-beta <- c(rep(1, 5), rep(0, 5))
-X <- matrix(rnorm(100 * 10), 100, 10)
-y <- X %*% beta + rnorm(100)
-X[1:5, ] <- matrix(rnorm(5 * 10, mean = 10), 5, 10)
+n <- 100 # Number of observations
+p <- 10 # Number of predictors
+p0 <- 5 # Number of relevant predictors
+n.c <- 5 # Number of contaminated observations
+beta <- c(rep(1, p0), rep(0, p - p0))
+X <- matrix(rnorm(n * p), n, p)
+y <- X %*% beta + rnorm(n)
+X[1:n.c, ] <- matrix(rnorm(n.c * p, mean = 10), n.c, p)
 
 # Fit with k=0,...,10 and h=90,100
 fit <- rss(X, y, k = 0:10, h = function(n) round(c(0.90, 1.00) * n))
@@ -73,5 +77,5 @@ predict(fit, X)
 
 ## Documentation
 
-See [robustsubsets\_1.0.1.pdf](robustsubsets_1.0.1.pdf) for
+See [robustsubsets\_1.0.2.pdf](robustsubsets_1.0.2.pdf) for
 documentation.

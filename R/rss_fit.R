@@ -12,8 +12,8 @@
 #'
 #' @param X a matrix of predictors
 #' @param y a vector of the response
-#' @param k the number of predictors to minimise sum of squares over (i.e. the model sparsity); by
-#' default a sequence from 0 to 20
+#' @param k the number of predictors to minimise sum of squares over; by default a sequence from 0
+#' to 20
 #' @param h the number of observations to minimise sum of squares over; by default a sequence from
 #' 75 to 100 percent of sample size (in increments of 5 percent)
 #' @param int a logical indicating whether to include an intercept
@@ -46,8 +46,10 @@
 #' \item{int}{whether an intercept was included}
 #'
 #' @details The function first computes solutions over all combinations of \code{k} and \code{h}
-#'  using heuristics. The solutions can then be refined further using the mixed-integer solver.
-#' The parameters that the solver operates on are specified by the \code{k.mio} and \code{h.mio}
+#' using heuristics. The heuristics include projected block-coordinate gradient descent and
+#' neighbourhood search (see our paper on \href{https://arxiv.org/abs/2005.08217}{arXiv}). The
+#' solutions produced by the heuristics can be refined further using the mixed-integer solver. The
+#' tuning parameters that the solver operates on are specified by the \code{k.mio} and \code{h.mio}
 #' parameters, which must be subsets of \code{k} and \code{h}. \cr
 #' If robust is set to true and the median of any predictor is zero, then the data cannot be
 #' standardised (the median absolute deviation is undefined) and an error message will be returned.

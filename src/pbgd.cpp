@@ -50,7 +50,7 @@ Rcpp::List pbgd(const arma::mat& X, const arma::vec& y, arma::vec beta, arma::ve
   arma::vec eta_nz = arma::zeros(n);
   eta_nz(nz_i).fill(1);
   arma::vec x = arma::join_vert(beta, eta, beta_nz, eta_nz);
-  obj = 0.5 * norm(y - X * beta - eta, 2);
+  obj = 0.5 * std::pow(arma::norm(y - X * beta - eta, 2), 2);
   return Rcpp::List::create(Named("x") = x, Named("objval") = obj);
 
 }

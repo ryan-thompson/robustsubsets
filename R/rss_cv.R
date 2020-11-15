@@ -17,9 +17,10 @@ globalVariables('fold') # Used in parallel for loop, to pass build checks
 #' @param y a vector of the response
 #' @param k the number of predictors to minimise sum of squares over; by default a sequence from 0
 #' to 20
-#' @param h the number of observations to minimise sum of squares over; by default a sequence from
-#' 75 to 100 percent of sample size (in increments of 5 percent); this should be a function of the
-#' sample size to facilitate cross-validation
+#' @param h a function that takes the sample size that returns the number of observations to
+#' minimise sum of squares over; by default produces a sequence from 75 to 100 percent of sample
+#' size (in increments of 5 percent); a function is used here to facilitate varying sample sizes in
+#' cross-validation
 #' @param int a logical indicating whether to include an intercept
 #' @param n.fold the number of folds to use in cross-validation
 #' @param n.cv the number of times to repeat cross-validation; the results are averaged

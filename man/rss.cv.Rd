@@ -25,9 +25,10 @@ rss.cv(
 \item{k}{the number of predictors to minimise sum of squares over; by default a sequence from 0
 to 20}
 
-\item{h}{the number of observations to minimise sum of squares over; by default a sequence from
-75 to 100 percent of sample size (in increments of 5 percent); this should be a function of the
-sample size to facilitate cross-validation}
+\item{h}{a function that takes the sample size that returns the number of observations to
+minimise sum of squares over; by default produces a sequence from 75 to 100 percent of sample
+size (in increments of 5 percent); a function is used here to facilitate varying sample sizes in
+cross-validation}
 
 \item{int}{a logical indicating whether to include an intercept}
 

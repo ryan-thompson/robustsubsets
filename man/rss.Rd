@@ -22,8 +22,10 @@ rss(
 \item{k}{the number of predictors to minimise sum of squares over; by default a sequence from 0
 to 20}
 
-\item{h}{the number of observations to minimise sum of squares over; by default a sequence from
-75 to 100 percent of sample size (in increments of 5 percent)}
+\item{h}{a function that takes the sample size that returns the number of observations to
+minimise sum of squares over; by default produces a sequence from 75 to 100 percent of sample
+size (in increments of 5 percent); a function is used here to facilitate varying sample sizes in
+cross-validation}
 
 \item{int}{a logical indicating whether to include an intercept}
 
@@ -42,10 +44,14 @@ Fits a sequence of robust subset selection models and cross-validates the predic
 error from these models.
 }
 \details{
-This function fits a sequence of models and cross-validates the prediction
-error associated with these models. In the interest of speed, these steps are carried out using
-heuristic optimisation methods. The parameters that produce the lowest cv error are run through
-the mixed-integer solver which (given sufficient time) will find a global minimiser. \cr
+The function is simply a wrapper that combines \code{rss.fit} and \code{rss.cv} to fit
+a sequence of robust subset selection models (indexed by \code{k} and \code{h}) and perform
+cross-validation for these models. Fitting is initially done using heuristics. Afterwards, the
+mixed-integer solver can be called to search for globally optimal solutions using the parameter
+\code{mio}. By default \code{mio='min'}, indicating that the mixed integer solver will be run
+only on the tuning parameters that produced the minimum cross-validation error. It is possible
+to run the mixed-integer solver on all tuning parameters using \code{mio='all'}, or not to call
+the solver at all using \code{mio='none'}.\cr
 See \code{rss.fit} and \code{rss.cv} for further options controlling the model fit and
 cross-validation.
 }

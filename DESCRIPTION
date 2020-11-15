@@ -1,7 +1,7 @@
 Package: robustsubsets
 Type: Package
 Title: Robust subset selection in linear regression
-Version: 1.0.1
+Version: 1.0.2
 Author: Ryan Thompson
 Maintainer: Ryan Thompson <ryan.thompson@monash.edu>
 Description: Provides functionality for robust subset selection in linear regression.
