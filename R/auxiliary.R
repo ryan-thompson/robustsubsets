@@ -2,28 +2,28 @@
 
 # Hard thresholding operator
 H <- function(x, keep) {
-  x[!(1:length(x) %in% order(abs(x), decreasing = T)[0:keep])] <- 0
+  x[!(seq_along(x) %in% order(abs(x), decreasing = TRUE)[0:keep])] <- 0
   return(x)
 }
 
 # Loss function
-f <- function(X, y, beta, eta) 0.5 * norm(y - X %*% beta - eta, '2') ^ 2
+f <- function(x, y, beta, eta) 0.5 * norm(y - x %*% beta - eta, '2') ^ 2
 
 # Robust scale
-rob.scale <- function(X, center = T, scale = T) {
-  if (center) X <- apply(X, 2, function(x) x - stats::median(x))
+rob.scale <- function(x, center = TRUE, scale = TRUE) {
+  if (center) x <- apply(x, 2, function(x) x - stats::median(x))
   if (scale) {
     if (center) {
-      X <- apply(X, 2, function(x) x / stats::mad(x))
+      x <- apply(x, 2, function(x) x / stats::mad(x))
     } else {
-      X <- apply(X, 2, function(x) x / stats::mad(x, center = 0))
+      x <- apply(x, 2, function(x) x / stats::mad(x, center = 0))
     }
   }
-  return(X)
+  return(x)
 }
 
 # Trimmed mean square prediction error
-tmspe <- function(x, alpha = 0.25) mean(sort(x ^ 2)[1:round(length(x) * (1 - alpha))])
+tmspe <- function(x, alpha = 0.25) mean(utils::head(sort(x ^ 2), length(x) * (1 - alpha)))
 
 # Mean square prediction error
 mspe <- function(x) mean(x ^ 2)

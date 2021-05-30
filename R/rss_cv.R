@@ -13,7 +13,7 @@ globalVariables('fold') # Used in parallel for loop, to pass build checks
 #' @description Does (repeated) \code{K}-fold cross-validation for robust subset selection in
 #'  parallel. In the interest of speed, uses heuristics without the mixed-integer solver.
 #'
-#' @param X a matrix of predictors
+#' @param x a matrix of predictors
 #' @param y a vector of the response
 #' @param k the number of predictors to minimise sum of squares over; by default a sequence from 0
 #' to 20
@@ -22,10 +22,10 @@ globalVariables('fold') # Used in parallel for loop, to pass build checks
 #' size (in increments of 5 percent); a function is used here to facilitate varying sample sizes in
 #' cross-validation
 #' @param int a logical indicating whether to include an intercept
-#' @param n.fold the number of folds to use in cross-validation
-#' @param n.cv the number of times to repeat cross-validation; the results are averaged
-#' @param n.core the number of cores to use in cross-validation; by default \code{n.fold} *
-#' \code{n.cv} cores are used (if available)
+#' @param nfold the number of folds to use in cross-validation
+#' @param ncv the number of times to repeat cross-validation; the results are averaged
+#' @param n.core the number of cores to use in cross-validation; by default \code{nfold} *
+#' \code{ncv} cores are used (if available)
 #' @param cv.objective the cross-validation objective function; by default trimmed mean square
 #' prediction error with 25 percent trimming
 #' @param ... any other arguments
@@ -38,6 +38,9 @@ globalVariables('fold') # Used in parallel for loop, to pass build checks
 #' \item{k}{the value of \code{k} that was passed in}
 #' \item{h}{the value of \code{h} that was passed in}
 #'
+#' @references Thompson, R. (2021). 'Robust subset selection'. arXiv:
+#' \href{https://arxiv.org/abs/2005.08217}{2005.08217}.
+#'
 #' @example R/examples/example_rss_cv.R
 #'
 #' @export
@@ -45,41 +48,43 @@ globalVariables('fold') # Used in parallel for loop, to pass build checks
 #' @importFrom foreach "%dopar%"
 #' @importFrom foreach "%:%"
 
-rss.cv <- function(X, y,
-                   k = 0:min(nrow(X) - int, ncol(X), 20),
+rss.cv <- function(x, y,
+                   k = 0:min(nrow(x) - int, ncol(x), 20),
                    h = function(n) round(seq(0.75, 1, 0.05) * n),
-                   int = T, n.fold = 10, n.cv = 1, n.core = n.fold * n.cv,
+                   int = TRUE, nfold = 10, ncv = 1, n.core = nfold * ncv,
                    cv.objective = tmspe, ...) {
 
   # Preliminaries
-  X <- as.matrix(X)
+  x <- as.matrix(x)
   y <- as.matrix(y)
-  n <- nrow(X)
+  n <- nrow(x)
   n.k <- length(k)
   n.core <- min(parallel::detectCores(), n.core)
 
-  # Compute errors via parallel n.cv * n.fold cross-validation
-  folds <- matrix(rep_len(1:n.fold, n), n, n.cv)
+  # Compute errors via parallel ncv * nfold cross-validation
+  folds <- matrix(rep_len(1:nfold, n), n, ncv)
   folds <- apply(folds, 2, sample)
   cb.fold <- function(...) abind::abind(..., along = 1)
   cb.cv <- function(...) abind::abind(..., along = 4)
   cl <- parallel::makeCluster(n.core)
   doParallel::registerDoParallel(cl)
-  errors <- foreach::foreach(cv = 1:n.cv, .combine = 'cb.cv', .multicombine = T, .inorder = F) %:%
-    foreach::foreach(fold = 1:n.fold, .combine = 'cb.fold', .multicombine = T, .inorder = F) %dopar% {
+  errors <- foreach::foreach(cv = 1:ncv, .combine = 'cb.cv', .multicombine = TRUE,
+                             .inorder = FALSE) %:%
+    foreach::foreach(fold = 1:nfold, .combine = 'cb.fold', .multicombine = TRUE,
+                     .inorder = FALSE) %dopar% {
       fold.ind <- which(folds[, cv] == fold)
-      X.train <- X[- fold.ind, ]
+      x.train <- x[- fold.ind, ]
       y.train <- y[- fold.ind]
-      X.valid <- X[fold.ind, , drop = F]
+      x.valid <- x[fold.ind, , drop = FALSE]
       y.valid <- y[fold.ind]
       fold.n <- n - length(fold.ind)
       fold.h <- h(fold.n)
       n.h <- length(fold.h)
-      fit <- rss.fit(X.train, y.train, k, fold.h, int, ...)
+      fit <- rss.fit(x.train, y.train, k, fold.h, int, ...)
       if (int) {
-        error <- apply(fit$beta, c(2, 3), function(x) y.valid - cbind(1, X.valid) %*% x)
+        error <- apply(fit$beta, c(2, 3), function(x) y.valid - cbind(1, x.valid) %*% x)
       } else {
-        error <- apply(fit$beta, c(2, 3), function(x) y.valid - X.valid %*% x)
+        error <- apply(fit$beta, c(2, 3), function(x) y.valid - x.valid %*% x)
       }
       dim(error) <- c(n - fold.n, n.k, n.h)
       error
@@ -89,7 +94,7 @@ rss.cv <- function(X, y,
   # Compute cv metric, mean of cv metric, and best (k,h) pair
   cv.est <- apply(errors, 2:length(dim(errors)), cv.objective)
   mean.cv <- apply(cv.est, 1:2, mean)
-  best <- which(mean.cv == min(mean.cv), arr.ind = T)
+  best <- which(mean.cv == min(mean.cv), arr.ind = TRUE)
 
   # Save results
   result <- list()

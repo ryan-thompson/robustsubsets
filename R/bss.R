@@ -12,7 +12,7 @@
 #' \code{h}=\code{n}, using nonrobust measures of location and scale to standardise, as well as a
 #' nonrobust measure of prediction error in cross-validation.
 #'
-#' @param X a matrix of predictors
+#' @param x a matrix of predictors
 #' @param y a vector of the response
 #' @param k the number of predictors to minimise sum of squares over; by default a sequence from 0
 #' to 20
@@ -27,10 +27,10 @@
 #'
 #' @export
 
-bss <- function(X, y,
-                k = 0:min(nrow(X) - int, ncol(X), 20),
-                int = T, mio = 'min', ...) {
+bss <- function(x, y,
+                k = 0:min(nrow(x) - int, ncol(x), 20),
+                int = TRUE, mio = 'min', ...) {
 
-  rss(X, y, k, function(n) n, int, mio, robust = F, cv.objective = mspe, ...)
+  rss(x, y, k, function(n) n, int, mio, robust = FALSE, cv.objective = mspe, ...)
 
 }

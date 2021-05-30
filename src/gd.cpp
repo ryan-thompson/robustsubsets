@@ -2,12 +2,12 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 using namespace Rcpp;
 
-// This is a C++ implementation of the projected block-coordinate gradient descent (pbgd) algorithm
+// This is a C++ implementation of the projected block-coordinate gradient descent (gd) algorithm
 // described in the paper.
 
 // [[Rcpp::export]]
-Rcpp::List pbgd(const arma::mat& X, const arma::vec& y, arma::vec beta, arma::vec eta, const int k,
-                const int h, const double step, const int max_iter, const double tol) {
+Rcpp::List gd(const arma::mat& X, const arma::vec& y, arma::vec beta, arma::vec eta, const int k,
+              const int h, const double step, const int max_iter, const double tol) {
 
   // Preliminary preparation
 

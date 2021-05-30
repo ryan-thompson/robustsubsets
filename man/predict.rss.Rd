@@ -4,12 +4,12 @@
 \alias{predict.rss}
 \title{Predict function for rss object}
 \usage{
-\method{predict}{rss}(object, X.new, k = "k.min", h = "h.min", ...)
+\method{predict}{rss}(object, x.new, k = "k.min", h = "h.min", ...)
 }
 \arguments{
 \item{object}{an object of class \code{rss}}
 
-\item{X.new}{a matrix of new values for the predictors}
+\item{x.new}{a matrix of new values for the predictors}
 
 \item{k}{the number of predictors indexing the desired fit; 'k.min' uses best \code{k} from
 cross-validation}

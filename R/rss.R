@@ -9,7 +9,7 @@
 #' @description Fits a sequence of robust subset selection models and cross-validates the prediction
 #' error from these models.
 #'
-#' @param X a matrix of predictors
+#' @param x a matrix of predictors
 #' @param y a vector of the response
 #' @param k the number of predictors to minimise sum of squares over; by default a sequence from 0
 #' to 20
@@ -37,17 +37,20 @@
 #' See \code{rss.fit} and \code{rss.cv} for further options controlling the model fit and
 #' cross-validation.
 #'
+#' @references Thompson, R. (2021). 'Robust subset selection'. arXiv:
+#' \href{https://arxiv.org/abs/2005.08217}{2005.08217}.
+#'
 #' @example R/examples/example_rss.R
 #'
 #' @export
 
-rss <- function(X, y,
-                k = 0:min(nrow(X) - int, ncol(X), 20),
+rss <- function(x, y,
+                k = 0:min(nrow(x) - int, ncol(x), 20),
                 h = function(n) round(seq(0.75, 1, 0.05) * n),
-                int = T, mio = 'min', ...) {
+                int = TRUE, mio = 'min', ...) {
 
   # Run cross-validation
-  cv <- rss.cv(X, y, k, h, int, ...)
+  cv <- rss.cv(x, y, k, h, int, ...)
 
   # Fit the models
   k.mio <- NULL
@@ -57,9 +60,9 @@ rss <- function(X, y,
     h.mio <- cv$h.min
   } else if (mio == 'all') {
     k.mio <- k
-    h.mio <- h(nrow(X))
+    h.mio <- h(nrow(x))
   }
-  fit <- rss.fit(X, y, k, h(nrow(X)), int, k.mio, h.mio, ...)
+  fit <- rss.fit(x, y, k, h(nrow(x)), int, k.mio, h.mio, ...)
 
   # Save results
   result <- list()
@@ -115,7 +118,7 @@ coef.rss <- function(object, k = 'k.min', h = 'h.min', ...) {
 #' @description Generate predictions given new data using a given parameter pair \code{(k,h)}.
 #'
 #' @param object an object of class \code{rss}
-#' @param X.new a matrix of new values for the predictors
+#' @param x.new a matrix of new values for the predictors
 #' @param k the number of predictors indexing the desired fit; 'k.min' uses best \code{k} from
 #' cross-validation
 #' @param h the number of observations indexing the desired fit; 'h.min' uses best \code{h} from
@@ -130,11 +133,11 @@ coef.rss <- function(object, k = 'k.min', h = 'h.min', ...) {
 #'
 #' @importFrom stats "predict"
 
-predict.rss <- function(object, X.new, k = 'k.min', h = 'h.min', ...) {
+predict.rss <- function(object, x.new, k = 'k.min', h = 'h.min', ...) {
 
   if (!is.null(k)) if (k == 'k.min') k <- object$cv$k.min
   if (!is.null(h)) if (h == 'h.min') h <- object$cv$h.min
-  predict.rss.fit(object$fit, X.new, k = k, h = h, ...)
+  predict.rss.fit(object$fit, x.new, k = k, h = h, ...)
 
 }
 

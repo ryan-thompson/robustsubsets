@@ -1,0 +1,13 @@
+citHeader("To cite robustsubsets in publications use:")
+
+citEntry(
+  entry       = "Article",
+  title       = "Robust subset selection",
+  author      = personList(as.person("Ryan Thompson")),
+  journal     = "arXiv:2005.08217",
+  year        = "2020",
+  textVersion =
+  paste("Ryan Thompson (2021).",
+        "Robust subset selection",
+        "arXiv:2005.08217")
+)

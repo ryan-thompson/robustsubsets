@@ -6,9 +6,9 @@
 
 using namespace Rcpp;
 
-// pbgd
-Rcpp::List pbgd(const arma::mat& X, const arma::vec& y, arma::vec beta, arma::vec eta, const int k, const int h, const double step, const int max_iter, const double tol);
-RcppExport SEXP _robustsubsets_pbgd(SEXP XSEXP, SEXP ySEXP, SEXP betaSEXP, SEXP etaSEXP, SEXP kSEXP, SEXP hSEXP, SEXP stepSEXP, SEXP max_iterSEXP, SEXP tolSEXP) {
+// gd
+Rcpp::List gd(const arma::mat& X, const arma::vec& y, arma::vec beta, arma::vec eta, const int k, const int h, const double step, const int max_iter, const double tol);
+RcppExport SEXP _robustsubsets_gd(SEXP XSEXP, SEXP ySEXP, SEXP betaSEXP, SEXP etaSEXP, SEXP kSEXP, SEXP hSEXP, SEXP stepSEXP, SEXP max_iterSEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -21,13 +21,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type step(stepSEXP);
     Rcpp::traits::input_parameter< const int >::type max_iter(max_iterSEXP);
     Rcpp::traits::input_parameter< const double >::type tol(tolSEXP);
-    rcpp_result_gen = Rcpp::wrap(pbgd(X, y, beta, eta, k, h, step, max_iter, tol));
+    rcpp_result_gen = Rcpp::wrap(gd(X, y, beta, eta, k, h, step, max_iter, tol));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_robustsubsets_pbgd", (DL_FUNC) &_robustsubsets_pbgd, 9},
+    {"_robustsubsets_gd", (DL_FUNC) &_robustsubsets_gd, 9},
     {NULL, NULL, 0}
 };
 

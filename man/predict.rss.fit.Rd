@@ -4,12 +4,12 @@
 \alias{predict.rss.fit}
 \title{Predict function for rss.fit object}
 \usage{
-\method{predict}{rss.fit}(object, X.new, k = NULL, h = NULL, ...)
+\method{predict}{rss.fit}(object, x.new, k = NULL, h = NULL, ...)
 }
 \arguments{
 \item{object}{an object of class \code{rss.fit}}
 
-\item{X.new}{a matrix of new values for the predictors}
+\item{x.new}{a matrix of new values for the predictors}
 
 \item{k}{the number of predictors indexing the desired fit}
 

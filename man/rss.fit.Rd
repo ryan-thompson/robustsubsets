@@ -5,18 +5,18 @@
 \title{Fit a robust subset selection model}
 \usage{
 rss.fit(
-  X,
+  x,
   y,
-  k = 0:min(nrow(X) - int, ncol(X), 20),
-  h = round(seq(0.75, 1, 0.05) * nrow(X)),
-  int = T,
+  k = 0:min(nrow(x) - int, ncol(x), 20),
+  h = round(seq(0.75, 1, 0.05) * nrow(x)),
+  int = TRUE,
   k.mio = NULL,
   h.mio = NULL,
   time = 60,
   tau = 1.25,
-  output = F,
+  output = FALSE,
   params = NULL,
-  robust = T,
+  robust = TRUE,
   max.iter.ns = 100,
   max.iter.gd = 1e+05,
   tol = 1e-04,
@@ -24,7 +24,7 @@ rss.fit(
 )
 }
 \arguments{
-\item{X}{a matrix of predictors}
+\item{x}{a matrix of predictors}
 
 \item{y}{a vector of the response}
 
@@ -42,13 +42,14 @@ to 20}
 
 \item{time}{a time limit in seconds on each call to the mixed-integer solver}
 
-\item{tau}{a positive number greater than 1 used to tighten variable bounds in the mixed-integer
-formulation; small values give quicker run times but can also exclude the optimal solution}
+\item{tau}{a positive number greater than 1 used to tighten coefficient bounds in the
+mixed-integer formulation; small values give quicker run times but can also exclude the optimal
+solution}
 
 \item{output}{a logical indicating whether to print status updates}
 
-\item{params}{an optional list of additional Gurobi parameters (the parameters Time and OutputFlag
-are controlled by \code{time} and \code{output})}
+\item{params}{an optional list of additional Gurobi parameters (the parameters Time and
+OutputFlag are controlled by \code{time} and \code{output})}
 
 \item{robust}{a logical indicating whether to standardise the data robustly; median/mad for true
 and mean/sd for false}
@@ -82,7 +83,7 @@ and mixed-integer optimisation (mio).
 \details{
 The function first computes solutions over all combinations of \code{k} and \code{h}
 using heuristics. The heuristics include projected block-coordinate gradient descent and
-neighbourhood search (see our paper on \href{https://arxiv.org/abs/2005.08217}{arXiv}). The
+neighbourhood search (see our paper on \href{https://arxiv.org/abs/2005.08217}{arxiv}). The
 solutions produced by the heuristics can be refined further using the mixed-integer solver. The
 tuning parameters that the solver operates on are specified by the \code{k.mio} and \code{h.mio}
 parameters, which must be subsets of \code{k} and \code{h}. \cr
@@ -97,19 +98,23 @@ p <- 10
 p0 <- 5
 n.c <- 5
 beta <- c(rep(1, p0), rep(0, p - p0))
-X <- matrix(rnorm(n * p), n, p)
+x <- matrix(rnorm(n * p), n, p)
 e <- rnorm(n, c(rep(10, n.c), rep(0, n - n.c)))
-y <- X \%*\% beta + e
+y <- x \%*\% beta + e
 
 # Fit robust subset selection models and run the mixed-integer solver
-fit <- rss.fit(X, y, k = 0:p, h = n - n.c, k.mio = 0:p, h.mio = n - n.c)
+fit <- rss.fit(x, y, k = 0:p, h = n - n.c, k.mio = 0:p, h.mio = n - n.c)
 
 # Extract model coefficients and generate predictions
 coef(fit, k = p0, h = n - n.c)
-predict(fit, X, k = p0, h = n - n.c)
+predict(fit, x, k = p0, h = n - n.c)
 
 # Plot coefficient profiles
 plot(fit)
+}
+\references{
+Thompson, R. (2021). 'Robust subset selection'. arXiv:
+\href{https://arxiv.org/abs/2005.08217}{2005.08217}.
 }
 \author{
 Ryan Thompson <ryan.thompson@monash.edu>

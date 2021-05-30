@@ -5,20 +5,20 @@
 \title{Cross-validation for robust subset selection}
 \usage{
 rss.cv(
-  X,
+  x,
   y,
-  k = 0:min(nrow(X) - int, ncol(X), 20),
+  k = 0:min(nrow(x) - int, ncol(x), 20),
   h = function(n) round(seq(0.75, 1, 0.05) * n),
-  int = T,
-  n.fold = 10,
-  n.cv = 1,
-  n.core = n.fold * n.cv,
+  int = TRUE,
+  nfold = 10,
+  ncv = 1,
+  n.core = nfold * ncv,
   cv.objective = tmspe,
   ...
 )
 }
 \arguments{
-\item{X}{a matrix of predictors}
+\item{x}{a matrix of predictors}
 
 \item{y}{a vector of the response}
 
@@ -32,12 +32,12 @@ cross-validation}
 
 \item{int}{a logical indicating whether to include an intercept}
 
-\item{n.fold}{the number of folds to use in cross-validation}
+\item{nfold}{the number of folds to use in cross-validation}
 
-\item{n.cv}{the number of times to repeat cross-validation; the results are averaged}
+\item{ncv}{the number of times to repeat cross-validation; the results are averaged}
 
-\item{n.core}{the number of cores to use in cross-validation; by default \code{n.fold} *
-\code{n.cv} cores are used (if available)}
+\item{n.core}{the number of cores to use in cross-validation; by default \code{nfold} *
+\code{ncv} cores are used (if available)}
 
 \item{cv.objective}{the cross-validation objective function; by default trimmed mean square
 prediction error with 25 percent trimming}
@@ -65,15 +65,19 @@ p <- 10
 p0 <- 5
 n.c <- 5
 beta <- c(rep(1, p0), rep(0, p - p0))
-X <- matrix(rnorm(n * p), n, p)
+x <- matrix(rnorm(n * p), n, p)
 e <- rnorm(n, c(rep(10, n.c), rep(0, n - n.c)))
-y <- X \%*\% beta + e
+y <- x \%*\% beta + e
 
 # Cross-validate robust subset selection models
-cv <- rss.cv(X, y, k = 0:10, h = function(n) round(c(0.95, 1.00) * n), n.core = 1)
+cv <- rss.cv(x, y, k = 0:10, h = function(n) round(c(0.95, 1.00) * n), n.core = 1)
 
 # Plot cross-validation results
 plot(cv)
+}
+\references{
+Thompson, R. (2021). 'Robust subset selection'. arXiv:
+\href{https://arxiv.org/abs/2005.08217}{2005.08217}.
 }
 \author{
 Ryan Thompson <ryan.thompson@monash.edu>
