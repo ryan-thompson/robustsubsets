@@ -1,5 +1,5 @@
 # Generate training data
-set.seed(123)
+set.seed(0)
 n <- 100
 p <- 10
 p0 <- 5
@@ -9,9 +9,11 @@ e <- rnorm(n)
 y <- x %*% beta + e
 
 # Best subset selection with cross-validation
-fit <- cv.bss(x, y)
+cl <- parallel::makeCluster(2)
+fit <- cv.bss(x, y, cluster = cl)
+parallel::stopCluster(cl)
 
 # Extract model coefficients, generate predictions, and plot cross-validation results
 coef(fit)
-predict(fit, x)
+predict(fit, x[1:3, ])
 plot(fit)

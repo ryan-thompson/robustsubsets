@@ -38,22 +38,24 @@ The `rss()` function fits a robust subset regression model for a grid of `k` and
 library(robustsubsets)
 
 # Generate training data with contaminated predictor matrix
-set.seed(123)
+set.seed(0)
 n <- 100 # Number of observations
 p <- 10 # Number of predictors
 p0 <- 5 # Number of relevant predictors
-ncontam <- 5 # Number of contaminated observations
+ncontam <- 10 # Number of contaminated observations
 beta <- c(rep(1, p0), rep(0, p - p0))
 x <- matrix(rnorm(n * p), n, p)
-y <- x %*% beta + rnorm(n)
-x[1:ncontam, ] <- matrix(rnorm(ncontam * p, mean = 10), ncontam, p)
+e <- rnorm(n, c(rep(10, ncontam), rep(0, n - ncontam)))
+y <- x %*% beta + e
 
-# Fit the robust subset selection regularisation path
+# Fit using robust subset selection
 fit <- rss(x, y)
 coef(fit, k = p0, h = n - ncontam)
 
-# Cross-validate the robust subset selection regularisation path
-fit <- cv.rss(x, y)
+# Cross-validate using robust subset selection
+cl <- parallel::makeCluster(2)
+fit <- cv.rss(x, y, cluster = cl)
+parallel::stopCluster(cl)
 coef(fit)
 ```
 

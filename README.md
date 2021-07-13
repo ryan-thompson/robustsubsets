@@ -41,32 +41,34 @@ automatically cross-validate these parameters.
 library(robustsubsets)
 
 # Generate training data with contaminated predictor matrix
-set.seed(123)
+set.seed(0)
 n <- 100 # Number of observations
 p <- 10 # Number of predictors
 p0 <- 5 # Number of relevant predictors
-ncontam <- 5 # Number of contaminated observations
+ncontam <- 10 # Number of contaminated observations
 beta <- c(rep(1, p0), rep(0, p - p0))
 x <- matrix(rnorm(n * p), n, p)
-y <- x %*% beta + rnorm(n)
-x[1:ncontam, ] <- matrix(rnorm(ncontam * p, mean = 10), ncontam, p)
+e <- rnorm(n, c(rep(10, ncontam), rep(0, n - ncontam)))
+y <- x %*% beta + e
 
-# Fit the robust subset selection regularisation path
+# Fit using robust subset selection
 fit <- rss(x, y)
 coef(fit, k = p0, h = n - ncontam)
 ```
 
-    ##  [1] 0.1719763 1.0787905 0.9532380 0.8548021 1.1739899 1.0471684 0.0000000
-    ##  [8] 0.0000000 0.0000000 0.0000000 0.0000000
+    ##  [1] -0.1424147  0.7800366  1.0083840  1.0259560  1.0409005  0.9616482
+    ##  [7]  0.0000000  0.0000000  0.0000000  0.0000000  0.0000000
 
 ``` r
-# Cross-validate the robust subset selection regularisation path
-fit <- cv.rss(x, y)
+# Cross-validate using robust subset selection
+cl <- parallel::makeCluster(2)
+fit <- cv.rss(x, y, cluster = cl)
+parallel::stopCluster(cl)
 coef(fit)
 ```
 
-    ##  [1] 0.1328087 1.0782082 0.9546673 0.8761584 1.0892592 1.0549823 0.0000000
-    ##  [8] 0.2406216 0.0000000 0.0000000 0.0000000
+    ##  [1] -0.1424147  0.7800366  1.0083840  1.0259560  1.0409005  0.9616482
+    ##  [7]  0.0000000  0.0000000  0.0000000  0.0000000  0.0000000
 
 ## Documentation
 
