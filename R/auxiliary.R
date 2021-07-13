@@ -1,29 +1,29 @@
 # This file contains a number of auxiliary functions to support primary functions
 
 # Hard thresholding operator
-H <- function(x, keep) {
+H <- \(x, keep) {
   x[!(seq_along(x) %in% order(abs(x), decreasing = TRUE)[0:keep])] <- 0
   return(x)
 }
 
 # Loss function
-f <- function(x, y, beta, eta) 0.5 * norm(y - x %*% beta - eta, '2') ^ 2
+f <- \(x, y, beta, eta) 0.5 * norm(y - x %*% beta - eta, '2') ^ 2
 
 # Robust scale
-rob.scale <- function(x, center = TRUE, scale = TRUE) {
-  if (center) x <- apply(x, 2, function(x) x - stats::median(x))
+rob.scale <- \(x, center = TRUE, scale = TRUE) {
+  if (center) x <- apply(x, 2, \(x) x - stats::median(x))
   if (scale) {
     if (center) {
-      x <- apply(x, 2, function(x) x / stats::mad(x))
+      x <- apply(x, 2, \(x) x / stats::mad(x))
     } else {
-      x <- apply(x, 2, function(x) x / stats::mad(x, center = 0))
+      x <- apply(x, 2, \(x) x / stats::mad(x, center = 0))
     }
   }
   return(x)
 }
 
 # Trimmed mean square prediction error
-tmspe <- function(x, alpha = 0.25) mean(utils::head(sort(x ^ 2), length(x) * (1 - alpha)))
+tmspe <- \(x, alpha = 0.25) mean(utils::head(sort(x ^ 2), length(x) * (1 - alpha)))
 
 # Mean square prediction error
-mspe <- function(x) mean(x ^ 2)
+mspe <- \(x) mean(x ^ 2)

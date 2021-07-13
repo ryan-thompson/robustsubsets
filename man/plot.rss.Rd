@@ -4,21 +4,18 @@
 \alias{plot.rss}
 \title{Plot function for rss object}
 \usage{
-\method{plot}{rss}(x, type = "cv", ...)
+\method{plot}{rss}(x, ...)
 }
 \arguments{
 \item{x}{an object of class \code{rss}}
 
-\item{type}{one of 'cv' or 'profile'}
-
 \item{...}{any other arguments}
 }
 \value{
-A plot of the cross-validation results or coefficient profiles.
+A plot of the coefficient profiles.
 }
 \description{
-Plot the cross-validation results or coefficient profiles from robust subset
-selection.
+Plot the coefficient profiles from robust subset selection.
 }
 \author{
 Ryan Thompson <ryan.thompson@monash.edu>

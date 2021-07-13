@@ -4,16 +4,14 @@
 \alias{coef.rss}
 \title{Coefficient function for rss object}
 \usage{
-\method{coef}{rss}(object, k = "k.min", h = "h.min", ...)
+\method{coef}{rss}(object, k = NULL, h = NULL, ...)
 }
 \arguments{
 \item{object}{an object of class \code{rss}}
 
-\item{k}{the number of predictors indexing the desired fit; 'k.min' uses best \code{k} from
-cross-validation}
+\item{k}{the number of predictors indexing the desired fit}
 
-\item{h}{the number of observations indexing the desired fit; 'h.min' uses best \code{h} from
-cross-validation}
+\item{h}{the number of observations indexing the desired fit}
 
 \item{...}{any other arguments}
 }

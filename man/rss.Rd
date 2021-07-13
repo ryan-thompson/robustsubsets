@@ -7,77 +7,104 @@
 rss(
   x,
   y,
-  k = 0:min(nrow(x) - int, ncol(x), 20),
-  h = function(n) round(seq(0.75, 1, 0.05) * n),
-  int = TRUE,
-  mio = "min",
-  ...
+  k = 0:min(nrow(x) - 1, ncol(x), 20),
+  h = round(seq(0.75, 1, 0.05) * nrow(x)),
+  k.mio = NULL,
+  h.mio = NULL,
+  params = list(TimeLimit = 60, OutputFlag = 0),
+  tau = 1.5,
+  warm.start = TRUE,
+  robust = TRUE,
+  max.ns.iter = 100,
+  max.gd.iter = 1e+05,
+  eps = 1e-04
 )
 }
 \arguments{
-\item{x}{a matrix of predictors}
+\item{x}{a predictor matrix}
 
-\item{y}{a vector of the response}
+\item{y}{a response vector}
 
 \item{k}{the number of predictors to minimise sum of squares over; by default a sequence from 0
 to 20}
 
-\item{h}{a function that takes the sample size that returns the number of observations to
-minimise sum of squares over; by default produces a sequence from 75 to 100 percent of sample
-size (in increments of 5 percent); a function is used here to facilitate varying sample sizes in
-cross-validation}
+\item{h}{the number of observations to minimise sum of squares over; by default a sequence from
+75 to 100 percent of sample size (in increments of 5 percent)}
 
-\item{int}{a logical indicating whether to include an intercept}
+\item{k.mio}{the subset of \code{k} for which the mixed-integer solver should be run}
 
-\item{mio}{one of 'min', 'all', or 'none' indicating whether to run the mixed-integer solver on
-the \code{k} and \code{h} that minimise the cv error, all \code{k} and \code{h}, or none at all}
+\item{h.mio}{the subset of \code{h} for which the mixed-integer solver should be run}
 
-\item{...}{any other arguments (see \code{rss.fit} and \code{rss.cv})}
+\item{params}{a list of parameters (settings) to pass to Gurobi}
+
+\item{tau}{a positive number greater than 1 used to tighten coefficient bounds in the
+mixed-integer formulation; small values give quicker run times but can also exclude the optimal
+solution; can be \code{Inf}}
+
+\item{warm.start}{a logical indicating whether to warm start the mio solver using the heuristics}
+
+\item{robust}{a logical indicating whether to standardise the data robustly; median/mad for true
+and mean/sd for false}
+
+\item{max.ns.iter}{the maximum number of neighbourhood search iterations allowed}
+
+\item{max.gd.iter}{the maximum number of gradient descent iterations allowed per value of
+\code{k} and \code{h}}
+
+\item{eps}{a numerical tolerance parameter used to declare convergence}
 }
 \value{
 An object of class \code{rss}; a list with the following components:
-\item{cv}{the output from \code{rss.cv}; see documentation}
-\item{fit}{the output from \code{rss.fit}; see documentation}
+\item{beta}{an array of estimated regression coefficients; columns correspond to \code{k} and
+matrices to \code{h}}
+\item{weights}{an array of binary weights; weights equal to one correspond to good observations
+selected for inclusion in the least squares fit; columns correspond to \code{k} and matrices to
+\code{h}}
+\item{objval}{a matrix with the objective function values; rows correspond to \code{k} and
+columns to \code{h}}
+\item{mipgap}{a matrix with the optimality gap values; rows correspond to \code{k} and columns
+to \code{h}}
+\item{k}{a vector containing the values of \code{k} used in the fit}
+\item{h}{a vector containing the values of \code{h} used in the fit}
 }
 \description{
-Fits a sequence of robust subset selection models and cross-validates the prediction
-error from these models.
+Fits a sequence of regression models using robust subset selection.
 }
 \details{
-The function is simply a wrapper that combines \code{rss.fit} and \code{rss.cv} to fit
-a sequence of robust subset selection models (indexed by \code{k} and \code{h}) and perform
-cross-validation for these models. Fitting is initially done using heuristics. Afterwards, the
-mixed-integer solver can be called to search for globally optimal solutions using the parameter
-\code{mio}. By default \code{mio='min'}, indicating that the mixed integer solver will be run
-only on the tuning parameters that produced the minimum cross-validation error. It is possible
-to run the mixed-integer solver on all tuning parameters using \code{mio='all'}, or not to call
-the solver at all using \code{mio='none'}.\cr
-See \code{rss.fit} and \code{rss.cv} for further options controlling the model fit and
-cross-validation.
+The function first computes solutions over all combinations of \code{k} and \code{h}
+using heuristics. The heuristics include projected block-coordinate gradient descent and
+neighbourhood search (see \href{https://arxiv.org/abs/2005.08217}{arXiv}). The solutions produced
+by the heuristics can be refined further using the mixed-integer solver. The tuning parameters
+that the solver operates on are specified by the \code{k.mio} and \code{h.mio} parameters,
+which must be subsets of \code{k} and \code{h}. \cr
+
+By default, the mixed-integer optimization problem is formulated with SOS constraints and
+bound constraints. The bound constraints are estimated as \eqn{\tau\|\hat{\beta}\|_\infty}, where
+\eqn{\hat{\beta}} is output from the heuristics. For finite values of \code{tau}, the
+mixed-integer solver automatically converts the SOS constraints to Big-M constraints, which are
+numerically simpler to optimise.
 }
 \examples{
 # Generate training data with mixture error
-set.seed(1)
+set.seed(123)
 n <- 100
 p <- 10
 p0 <- 5
-n.c <- 5
+ncontam <- 5
 beta <- c(rep(1, p0), rep(0, p - p0))
 x <- matrix(rnorm(n * p), n, p)
-e <- rnorm(n, c(rep(10, n.c), rep(0, n - n.c)))
+e <- rnorm(n, c(rep(10, ncontam), rep(0, n - ncontam)))
 y <- x \%*\% beta + e
 
-# Fit robust subset selection models
-# Run the mixed-integer solver on the (k,h) that minimises the cv error
-fit <- rss(x, y, k = 0:10, h = function(n) round(c(0.95, 1.00) * n), mio = 'min', n.core = 1)
+# Robust subset selection
+fit <- robustsubsets::rss(x, y, k.mio = p0, h.mio = n - ncontam)
 
-# Extract model coefficients and generate predictions
-coef(fit)
-predict(fit, x)
+# Extract model coefficients, generate predictions, and plot cross-validation results
+coef(fit, k = p0, h = n - ncontam)
+predict(fit, x, k = p0, h = n - ncontam)
+plot(fit)
 
-# Plot coefficient profiles and cross-validation results
-plot(fit, type = 'profile')
-plot(fit, type = 'cv')
+
 }
 \references{
 Thompson, R. (2021). 'Robust subset selection'. arXiv:
