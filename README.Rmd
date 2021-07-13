@@ -1,7 +1,7 @@
 ---
-output: github_document
-header-includes:
-   - \usepackage{amsmath}
+output: 
+  github_document:
+    pandoc_args: --webtex
 ---
 
 ```{r setup, include = F}
@@ -16,7 +16,9 @@ An R implementation of [robust subset selection](https://arxiv.org/abs/2005.0821
 
 Robust subset selection is a robust adaption of the classic best subset selection estimator, and is defined by the constrained least squares problem:
 
-![](man/figures/README-equation.png)<!-- -->
+$$
+\min_{\beta, I}~\frac{1}{2}\sum_{i\in I}(y_i-x_i^T\beta)^2\quad~\operatorname{s.t.}\|\beta\|_0\leq k,~I\in\{1,\ldots,n\},~|I|\geq h
+$$
 
 Robust subsets seeks out the best subset of predictors and observations and performs a least squares fit on this subset. The number of predictors used in the fit is controlled by the parameter `k` and the observations by the parameter `h`.
 
@@ -61,4 +63,4 @@ coef(fit)
 
 ## Documentation
 
-See the package [reference manual](robustsubsets_1.1.0.pdf).
+See the package [reference manual](robustsubsets_1.1.1.pdf).

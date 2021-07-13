@@ -7,7 +7,7 @@
 \method{coef}{cv.rss}(object, k = "k.min", h = "h.min", ...)
 }
 \arguments{
-\item{object}{an object of class \code{rss}}
+\item{object}{an object of class \code{cv.rss}}
 
 \item{k}{the number of predictors indexing the desired fit; 'k.min' uses best \code{k} from
 cross-validation}

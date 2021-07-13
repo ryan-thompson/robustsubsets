@@ -70,7 +70,8 @@ cv.rss <- \(x, y, k = 0:min(nrow(x) - 1, ncol(x), 20), h = \(n) round(seq(0.75, 
   if (is.null(cluster)) {
     error <- lapply(1:nfold, cvf)
   } else {
-    error <- parallel::clusterApply(cluster, x = 1:nfold, fun = cvf)
+    parallel::clusterCall(cluster, \() library(robustsubsets))
+    error <- parallel::clusterApply(cluster, 1:nfold, cvf)
   }
   error <- abind::abind(error, along = 1)
 
@@ -109,7 +110,7 @@ cv.rss <- \(x, y, k = 0:min(nrow(x) - 1, ncol(x), 20), h = \(n) round(seq(0.75, 
 #'
 #' @description Extracts coefficients for a given parameter pair \code{(k,h)}.
 #'
-#' @param object an object of class \code{rss}
+#' @param object an object of class \code{cv.rss}
 #' @param k the number of predictors indexing the desired fit; 'k.min' uses best \code{k} from
 #' cross-validation
 #' @param h the number of observations indexing the desired fit; 'h.min' uses best \code{h} from
@@ -142,7 +143,7 @@ coef.cv.rss <- \(object, k = 'k.min', h = 'h.min', ...) {
 #'
 #' @description Generate predictions given new data using a given parameter pair \code{(k,h)}.
 #'
-#' @param object an object of class \code{rss}
+#' @param object an object of class \code{cv.rss}
 #' @param x.new a matrix of new values for the predictors
 #' @param k the number of predictors indexing the desired fit; 'k.min' uses best \code{k} from
 #' cross-validation

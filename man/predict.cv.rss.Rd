@@ -7,7 +7,7 @@
 \method{predict}{cv.rss}(object, x.new, k = "k.min", h = "h.min", ...)
 }
 \arguments{
-\item{object}{an object of class \code{rss}}
+\item{object}{an object of class \code{cv.rss}}
 
 \item{x.new}{a matrix of new values for the predictors}
 
