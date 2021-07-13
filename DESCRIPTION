@@ -1,7 +1,7 @@
 Package: robustsubsets
 Type: Package
 Title: Robust Subset Selection
-Version: 1.0.2
+Version: 1.1.0
 Author: Ryan Thompson
 Maintainer: Ryan Thompson <ryan.thompson@monash.edu>
 Description: Provides functionality for robust subset selection in linear regression.
@@ -13,11 +13,9 @@ RoxygenNote: 7.1.1
 Imports:
     stats,
     utils,
-    foreach,
-    doParallel,
-    abind,
     gurobi,
-    Matrix,
+    parallel,
+    abind,
     ggplot2,
     Rcpp
 LinkingTo: 
