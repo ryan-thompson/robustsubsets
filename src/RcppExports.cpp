@@ -6,28 +6,31 @@
 
 using namespace Rcpp;
 
-// gd
-Rcpp::List gd(const arma::mat& X, const arma::vec& y, arma::vec beta, arma::vec eta, const int k, const int h, const double step, const int max_iter, const double tol);
-RcppExport SEXP _robustsubsets_gd(SEXP XSEXP, SEXP ySEXP, SEXP betaSEXP, SEXP etaSEXP, SEXP kSEXP, SEXP hSEXP, SEXP stepSEXP, SEXP max_iterSEXP, SEXP tolSEXP) {
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
+// ns
+Rcpp::List ns(const arma::mat& x, const arma::vec& y, const arma::vec& k, const arma::vec& h, const unsigned max_ns_iter, const unsigned max_gd_iter, const double eps);
+RcppExport SEXP _robustsubsets_ns(SEXP xSEXP, SEXP ySEXP, SEXP kSEXP, SEXP hSEXP, SEXP max_ns_iterSEXP, SEXP max_gd_iterSEXP, SEXP epsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type eta(etaSEXP);
-    Rcpp::traits::input_parameter< const int >::type k(kSEXP);
-    Rcpp::traits::input_parameter< const int >::type h(hSEXP);
-    Rcpp::traits::input_parameter< const double >::type step(stepSEXP);
-    Rcpp::traits::input_parameter< const int >::type max_iter(max_iterSEXP);
-    Rcpp::traits::input_parameter< const double >::type tol(tolSEXP);
-    rcpp_result_gen = Rcpp::wrap(gd(X, y, beta, eta, k, h, step, max_iter, tol));
+    Rcpp::traits::input_parameter< const arma::vec& >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type h(hSEXP);
+    Rcpp::traits::input_parameter< const unsigned >::type max_ns_iter(max_ns_iterSEXP);
+    Rcpp::traits::input_parameter< const unsigned >::type max_gd_iter(max_gd_iterSEXP);
+    Rcpp::traits::input_parameter< const double >::type eps(epsSEXP);
+    rcpp_result_gen = Rcpp::wrap(ns(x, y, k, h, max_ns_iter, max_gd_iter, eps));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_robustsubsets_gd", (DL_FUNC) &_robustsubsets_gd, 9},
+    {"_robustsubsets_ns", (DL_FUNC) &_robustsubsets_ns, 7},
     {NULL, NULL, 0}
 };
 
