@@ -32,38 +32,31 @@ devtools::install_github('ryan-thompson/robustsubsets')
 
 ## Usage
 
-The `rss` function is the primary function for robust subset selection, it calls `rss.fit` and `rss.cv` to fit and cross-validate the model over various values of `k` and `h`.
+The `rss()` function fits a robust subset regression model for a grid of `k` and `h`. The `cv.rss()` function provides a convenient way to automatically cross-validate these parameters.
 
-```{r, example, results = "hide"} 
+```{r, example} 
 library(robustsubsets)
 
 # Generate training data with contaminated predictor matrix
-set.seed(1)
+set.seed(123)
 n <- 100 # Number of observations
 p <- 10 # Number of predictors
 p0 <- 5 # Number of relevant predictors
-n.c <- 5 # Number of contaminated observations
+ncontam <- 5 # Number of contaminated observations
 beta <- c(rep(1, p0), rep(0, p - p0))
 x <- matrix(rnorm(n * p), n, p)
 y <- x %*% beta + rnorm(n)
-x[1:n.c, ] <- matrix(rnorm(n.c * p, mean = 10), n.c, p)
+x[1:ncontam, ] <- matrix(rnorm(ncontam * p, mean = 10), ncontam, p)
 
-# Fit with k=0,...,10 and h=90,100
-fit <- rss(x, y, k = 0:10, h = function(n) round(c(0.90, 1.00) * n))
+# Fit the robust subset selection regularisation path
+fit <- rss(x, y)
+coef(fit, k = p0, h = n - ncontam)
 
-# Plot coefficient profiles
-plot(fit, type = 'profile')
-
-# Plot cross-validation results
-plot(fit, type = 'cv')
-
-# Extract coefficients (corresponding to best parameters from cross-validation)
+# Cross-validate the robust subset selection regularisation path
+fit <- cv.rss(x, y)
 coef(fit)
-
-# Make predictions (using best parameters from cross-validation)
-predict(fit, x)
 ```
 
 ## Documentation
 
-See [robustsubsets_1.0.2.pdf](robustsubsets_1.0.2.pdf) for documentation.
+See the package [reference manual](robustsubsets_1.1.0.pdf).

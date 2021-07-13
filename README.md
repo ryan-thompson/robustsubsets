@@ -33,49 +33,41 @@ devtools::install_github('ryan-thompson/robustsubsets')
 
 ## Usage
 
-The `rss` function is the primary function for robust subset selection,
-it calls `rss.fit` and `rss.cv` to fit and cross-validate the model over
-various values of `k` and `h`.
+The `rss()` function fits a robust subset regression model for a grid of
+`k` and `h`. The `cv.rss()` function provides a convenient way to
+automatically cross-validate these parameters.
 
 ``` r
 library(robustsubsets)
 
 # Generate training data with contaminated predictor matrix
-set.seed(1)
+set.seed(123)
 n <- 100 # Number of observations
 p <- 10 # Number of predictors
 p0 <- 5 # Number of relevant predictors
-n.c <- 5 # Number of contaminated observations
+ncontam <- 5 # Number of contaminated observations
 beta <- c(rep(1, p0), rep(0, p - p0))
 x <- matrix(rnorm(n * p), n, p)
 y <- x %*% beta + rnorm(n)
-x[1:n.c, ] <- matrix(rnorm(n.c * p, mean = 10), n.c, p)
+x[1:ncontam, ] <- matrix(rnorm(ncontam * p, mean = 10), ncontam, p)
 
-# Fit with k=0,...,10 and h=90,100
-fit <- rss(x, y, k = 0:10, h = function(n) round(c(0.90, 1.00) * n))
-
-# Plot coefficient profiles
-plot(fit, type = 'profile')
+# Fit the robust subset selection regularisation path
+fit <- rss(x, y)
+coef(fit, k = p0, h = n - ncontam)
 ```
 
-![](man/figures/README-example-1.png)<!-- -->
+    ##  [1] 0.1719763 1.0787905 0.9532380 0.8548021 1.1739899 1.0471684 0.0000000
+    ##  [8] 0.0000000 0.0000000 0.0000000 0.0000000
 
 ``` r
-# Plot cross-validation results
-plot(fit, type = 'cv')
-```
-
-![](man/figures/README-example-2.png)<!-- -->
-
-``` r
-# Extract coefficients (corresponding to best parameters from cross-validation)
+# Cross-validate the robust subset selection regularisation path
+fit <- cv.rss(x, y)
 coef(fit)
-
-# Make predictions (using best parameters from cross-validation)
-predict(fit, x)
 ```
+
+    ##  [1] 0.1328087 1.0782082 0.9546673 0.8761584 1.0892592 1.0549823 0.0000000
+    ##  [8] 0.2406216 0.0000000 0.0000000 0.0000000
 
 ## Documentation
 
-See [robustsubsets\_1.0.2.pdf](robustsubsets_1.0.2.pdf) for
-documentation.
+See the package [reference manual](robustsubsets_1.1.0.pdf).
