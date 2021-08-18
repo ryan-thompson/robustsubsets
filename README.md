@@ -23,8 +23,8 @@ observations by the parameter `h`.
 
 ## Installation
 
-You should install Gurobi and the associated R package gurobi before
-installing robustsubsets. Gurobi is available for free under academic
+You should install Gurobi and the associated R package `gurobi` before
+installing `robustsubsets`. Gurobi is available for free under academic
 license at <https://www.gurobi.com/>.
 
 To install `robustsubsets` from GitHub, run the following code:
