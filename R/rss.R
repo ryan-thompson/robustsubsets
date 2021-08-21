@@ -16,13 +16,13 @@
 #' 75 to 100 percent of sample size (in increments of 5 percent)
 #' @param k.mio the subset of \code{k} for which the mixed-integer solver should be run
 #' @param h.mio the subset of \code{h} for which the mixed-integer solver should be run
-#' @param params a list of parameters (settings) to pass to Gurobi
-#' @param tau a positive number greater than 1 used to tighten coefficient bounds in the
-#' mixed-integer formulation; small values give quicker run times but can also exclude the optimal
+#' @param params a list of parameters (settings) to pass to the mixed-integer solver (Gurobi)
+#' @param tau a positive number greater than or equal to 1 used to tighten coefficient bounds in the
+#' mixed-integer solver; small values give quicker run times but can also exclude the optimal
 #' solution; can be \code{Inf}
 #' @param warm.start a logical indicating whether to warm start the mio solver using the heuristics
-#' @param robust a logical indicating whether to standardise the data robustly; median/mad for true
-#' and mean/sd for false
+#' @param robust a logical indicating whether to standardise the data robustly; median/mad for
+#' \code{TRUE} and mean/sd for \code{FALSE}
 #' @param max.ns.iter the maximum number of neighbourhood search iterations allowed
 #' @param max.gd.iter the maximum number of gradient descent iterations allowed per value of
 #' \code{k} and \code{h}
@@ -52,7 +52,7 @@
 #' bound constraints. The bound constraints are estimated as \eqn{\tau\|\hat{\beta}\|_\infty}, where
 #' \eqn{\hat{\beta}} is output from the heuristics. For finite values of \code{tau}, the
 #' mixed-integer solver automatically converts the SOS constraints to Big-M constraints, which are
-#' numerically simpler to optimise.
+#' more numerically efficient to optimise.
 #'
 #' @references Thompson, R. (2021). 'Robust subset selection'. arXiv:
 #' \href{https://arxiv.org/abs/2005.08217}{2005.08217}.

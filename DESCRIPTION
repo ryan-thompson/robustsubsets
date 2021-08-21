@@ -4,7 +4,9 @@ Title: Robust Subset Selection
 Version: 1.1.1
 Author: Ryan Thompson
 Maintainer: Ryan Thompson <ryan.thompson@monash.edu>
-Description: Provides functionality for robust subset selection in linear regression.
+Description: Provides tools for sparse linear regression modelling with contaminated data. Combines 
+    the least trimmed squares loss function with a constraint on the maximum number of nonzero 
+    regression coefficients. Exact and heuristic computational algorithms are implemented.
 URL: https://github.com/ryan-thompson/robustsubsets
 BugReports: https://github.com/ryan-thompson/robustsubsets/issues
 License: GPL-3

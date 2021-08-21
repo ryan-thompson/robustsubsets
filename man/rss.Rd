@@ -35,16 +35,16 @@ to 20}
 
 \item{h.mio}{the subset of \code{h} for which the mixed-integer solver should be run}
 
-\item{params}{a list of parameters (settings) to pass to Gurobi}
+\item{params}{a list of parameters (settings) to pass to the mixed-integer solver (Gurobi)}
 
-\item{tau}{a positive number greater than 1 used to tighten coefficient bounds in the
-mixed-integer formulation; small values give quicker run times but can also exclude the optimal
+\item{tau}{a positive number greater than or equal to 1 used to tighten coefficient bounds in the
+mixed-integer solver; small values give quicker run times but can also exclude the optimal
 solution; can be \code{Inf}}
 
 \item{warm.start}{a logical indicating whether to warm start the mio solver using the heuristics}
 
-\item{robust}{a logical indicating whether to standardise the data robustly; median/mad for true
-and mean/sd for false}
+\item{robust}{a logical indicating whether to standardise the data robustly; median/mad for
+\code{TRUE} and mean/sd for \code{FALSE}}
 
 \item{max.ns.iter}{the maximum number of neighbourhood search iterations allowed}
 
@@ -82,7 +82,7 @@ By default, the mixed-integer optimization problem is formulated with SOS constr
 bound constraints. The bound constraints are estimated as \eqn{\tau\|\hat{\beta}\|_\infty}, where
 \eqn{\hat{\beta}} is output from the heuristics. For finite values of \code{tau}, the
 mixed-integer solver automatically converts the SOS constraints to Big-M constraints, which are
-numerically simpler to optimise.
+more numerically efficient to optimise.
 }
 \examples{
 # Generate training data with mixture error
