@@ -10,11 +10,7 @@ Robust subset selection is a robust adaption of the classic best subset
 selection estimator, and is defined by the constrained least squares
 problem:
 
-![
-\\min\_{\\beta, I}\~\\frac{1}{2}\\sum\_{i\\in I}(y\_i-x\_i^T\\beta)^2\\quad\~\\operatorname{s.t.}\\\|\\beta\\\|\_0\\leq k,\~I\\in\\{1,\\ldots,n\\},\~\|I\|\\geq h
-](https://latex.codecogs.com/png.latex?%0A%5Cmin_%7B%5Cbeta%2C%20I%7D~%5Cfrac%7B1%7D%7B2%7D%5Csum_%7Bi%5Cin%20I%7D%28y_i-x_i%5ET%5Cbeta%29%5E2%5Cquad~%5Coperatorname%7Bs.t.%7D%5C%7C%5Cbeta%5C%7C_0%5Cleq%20k%2C~I%5Cin%5C%7B1%2C%5Cldots%2Cn%5C%7D%2C~%7CI%7C%5Cgeq%20h%0A "
-\min_{\beta, I}~\frac{1}{2}\sum_{i\in I}(y_i-x_i^T\beta)^2\quad~\operatorname{s.t.}\|\beta\|_0\leq k,~I\in\{1,\ldots,n\},~|I|\geq h
-")
+![\min\_{\beta, I}\~\frac{1}{2}\sum\_{i\in I}(y_i-x_i^T\beta)^2\quad\~\operatorname{s.t.}\\\|\beta\\\|\_0\leq k,\~I\subseteq\\{1,\ldots,n\\},\~\|I\|\geq h](https://latex.codecogs.com/png.latex?%5Cmin_%7B%5Cbeta%2C%20I%7D~%5Cfrac%7B1%7D%7B2%7D%5Csum_%7Bi%5Cin%20I%7D%28y_i-x_i%5ET%5Cbeta%29%5E2%5Cquad~%5Coperatorname%7Bs.t.%7D%5C%7C%5Cbeta%5C%7C_0%5Cleq%20k%2C~I%5Csubseteq%5C%7B1%2C%5Cldots%2Cn%5C%7D%2C~%7CI%7C%5Cgeq%20h "\min_{\beta, I}~\frac{1}{2}\sum_{i\in I}(y_i-x_i^T\beta)^2\quad~\operatorname{s.t.}\|\beta\|_0\leq k,~I\subseteq\{1,\ldots,n\},~|I|\geq h")
 
 Robust subsets seeks out the best subset of predictors and observations
 and performs a least squares fit on this subset. The number of
