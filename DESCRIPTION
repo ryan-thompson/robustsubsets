@@ -1,7 +1,7 @@
 Package: robustsubsets
 Type: Package
 Title: Robust Subset Selection
-Version: 1.1.1
+Version: 1.1.2
 Author: Ryan Thompson
 Maintainer: Ryan Thompson <ryan.thompson@monash.edu>
 Description: Provides tools for sparse linear regression modelling with contaminated data. Combines 
@@ -11,6 +11,6 @@ URL: https://github.com/ryan-thompson/robustsubsets
 BugReports: https://github.com/ryan-thompson/robustsubsets/issues
 License: GPL-3
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Imports: gurobi, parallel, abind, ggplot2, Rcpp
 LinkingTo: Rcpp, RcppArmadillo

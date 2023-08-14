@@ -67,7 +67,9 @@ rss <- \(x, y, k = 0:min(nrow(x) - 1, ncol(x), 20), h = round(seq(0.75, 1, 0.05)
 
   # Check data is valid
   if (!is.matrix(x)) x <- as.matrix(x)
+  attributes(x)$dimnames <- NULL
   if (!is.matrix(y)) y <- as.matrix(y)
+  attributes(y)$dimnames <- NULL
 
   # Check arguments
   if (!is.null(k.mio)) if (!all(k.mio %in% k)) stop('k.mio not a subset of k')
@@ -95,7 +97,7 @@ rss <- \(x, y, k = 0:min(nrow(x) - 1, ncol(x), 20), h = round(seq(0.75, 1, 0.05)
   }
 
   # Run neighbourhood search
-  fits <- ns(x, y, k, h, max.ns.iter, max.gd.iter, eps)
+  fits <- robustsubsets:::ns(x, y, k, h, max.ns.iter, max.gd.iter, eps)
 
   # Run mio
   fits$mipgap <- array(dim = c(nk, nh))

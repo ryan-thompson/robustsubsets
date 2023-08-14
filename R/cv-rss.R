@@ -46,7 +46,9 @@ cv.rss <- \(x, y, k = 0:min(nrow(x) - 1, ncol(x), 20), h = \(n) round(seq(0.75, 
 
   # Check data is valid
   if (!is.matrix(x)) x <- as.matrix(x)
+  attributes(x)$dimnames <- NULL
   if (!is.matrix(y)) y <- as.matrix(y)
+  attributes(y)$dimnames <- NULL
 
   # Preliminaries
   n <- nrow(x)

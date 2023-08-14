@@ -37,7 +37,9 @@ void gd(const arma::mat& x, const arma::mat& xt, const arma::vec& y, arma::vec& 
   arma::uvec nz_j = arma::find(beta != 0);
   arma::uvec z_i = arma::find(eta == 0);
   arma::uvec nz_i = arma::find(eta != 0);
-  beta(nz_j) = arma::solve(xt(nz_j, z_i) * x(z_i, nz_j), xt(nz_j, z_i) * y(z_i));
+  if (nz_j.n_elem > 0 && z_i.n_elem > 0) {
+    beta(nz_j) = arma::solve(xt(nz_j, z_i) * x(z_i, nz_j), xt(nz_j, z_i) * y(z_i));
+  }
   eta = y - x * beta;
   eta(z_i).fill(0);
   objval = 0.5 * std::pow(arma::norm(y - x * beta - eta, 2), 2);
