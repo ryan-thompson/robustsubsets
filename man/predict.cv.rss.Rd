@@ -26,5 +26,5 @@ An array of predictions.
 Generate predictions given new data using a given parameter pair \code{(k,h)}.
 }
 \author{
-Ryan Thompson <ryan.thompson@monash.edu>
+Ryan Thompson
 }

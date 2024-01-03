@@ -5,7 +5,7 @@
 
 #' @title Cross-validated robust subset selection
 #'
-#' @author Ryan Thompson <ryan.thompson@monash.edu>
+#' @author Ryan Thompson
 #'
 #' @description  Fits a sequence of regression models using robust subset selection and then
 #' cross-validates these models.
@@ -108,7 +108,7 @@ cv.rss <- \(x, y, k = 0:min(nrow(x) - 1, ncol(x), 20), h = \(n) round(seq(0.75, 
 
 #' @title Coefficient function for cv.rss object
 #'
-#' @author Ryan Thompson <ryan.thompson@monash.edu>
+#' @author Ryan Thompson
 #'
 #' @description Extracts coefficients for a given parameter pair \code{(k,h)}.
 #'
@@ -141,7 +141,7 @@ coef.cv.rss <- \(object, k = 'k.min', h = 'h.min', ...) {
 
 #' @title Predict function for cv.rss object
 #'
-#' @author Ryan Thompson <ryan.thompson@monash.edu>
+#' @author Ryan Thompson
 #'
 #' @description Generate predictions given new data using a given parameter pair \code{(k,h)}.
 #'
@@ -175,7 +175,7 @@ predict.cv.rss <- \(object, x.new, k = 'k.min', h = 'h.min', ...) {
 
 #' @title Plot function for cv.rss object
 #'
-#' @author Ryan Thompson <ryan.thompson@monash.edu>
+#' @author Ryan Thompson
 #'
 #' @description Plot the cross-validation results from robust subset selection.
 #'

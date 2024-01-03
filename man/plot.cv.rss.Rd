@@ -18,5 +18,5 @@ A plot of the cross-validation results.
 Plot the cross-validation results from robust subset selection.
 }
 \author{
-Ryan Thompson <ryan.thompson@monash.edu>
+Ryan Thompson
 }

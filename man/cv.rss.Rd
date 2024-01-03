@@ -79,5 +79,5 @@ predict(fit, x[1:3, ])
 plot(fit)
 }
 \author{
-Ryan Thompson <ryan.thompson@monash.edu>
+Ryan Thompson
 }

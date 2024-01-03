@@ -4,7 +4,7 @@
 
 #' @title Robust subset selection
 #'
-#' @author Ryan Thompson <ryan.thompson@monash.edu>
+#' @author Ryan Thompson
 #'
 #' @description Fits a sequence of regression models using robust subset selection.
 #'
@@ -48,14 +48,14 @@
 #' that the solver operates on are specified by the \code{k.mio} and \code{h.mio} parameters,
 #' which must be subsets of \code{k} and \code{h}. \cr
 #'
-#' By default, the mixed-integer optimization problem is formulated with SOS constraints and
+#' By default, the mixed-integer optimisation problem is formulated with SOS constraints and
 #' bound constraints. The bound constraints are estimated as \eqn{\tau\|\hat{\beta}\|_\infty}, where
 #' \eqn{\hat{\beta}} is output from the heuristics. For finite values of \code{tau}, the
 #' mixed-integer solver automatically converts the SOS constraints to Big-M constraints, which are
 #' more numerically efficient to optimise.
 #'
-#' @references Thompson, R. (2021). 'Robust subset selection'. arXiv:
-#' \href{https://arxiv.org/abs/2005.08217}{2005.08217}.
+#' @references Thompson, R. (2022). 'Robust subset selection'. Computational Statistics and Data
+#' Analysis 169, p. 107415.
 #'
 #' @example R/examples/example-rss.R
 #'
@@ -92,12 +92,12 @@ rss <- \(x, y, k = 0:min(nrow(x) - 1, ncol(x), 20), h = round(seq(0.75, 1, 0.05)
                             fail. Set robust = FALSE or remove offending predictors.')
     y <- rob.scale(y, center = TRUE, scale = FALSE)
   } else {
-    x <- scale(x, center = TRUE, scale = TRUE)
-    y <- scale(y, center = TRUE, scale = FALSE)
+    x <- scale2(x, center = TRUE, scale = TRUE)
+    y <- scale2(y, center = TRUE, scale = FALSE)
   }
 
   # Run neighbourhood search
-  fits <- robustsubsets:::ns(x, y, k, h, max.ns.iter, max.gd.iter, eps)
+  fits <- ns(x, y, k, h, max.ns.iter, max.gd.iter, eps)
 
   # Run mio
   fits$mipgap <- array(dim = c(nk, nh))
@@ -254,6 +254,7 @@ mio <- \(x, y, k, h, beta, eta, tau, params, warm.start) {
     }
     if (warm.start) model$start <- c(beta, eta, beta == 0, eta == 0, w %*% c(beta, eta))  # Warm start
   }
+
   # Solve the model using Gurobi
   fit <- gurobi::gurobi(model, params)
   if (is.null(fit$x)) x <- rep(0, p + n) # In case Gurobi fails to solve the relaxation
@@ -270,7 +271,7 @@ mio <- \(x, y, k, h, beta, eta, tau, params, warm.start) {
 
 #' @title Coefficient function for rss object
 #'
-#' @author Ryan Thompson <ryan.thompson@monash.edu>
+#' @author Ryan Thompson
 #'
 #' @description Extracts coefficients for a given parameter pair \code{(k,h)}.
 #'
@@ -301,7 +302,7 @@ coef.rss <- \(object, k = NULL, h = NULL, ...) {
 
 #' @title Predict function for rss object
 #'
-#' @author Ryan Thompson <ryan.thompson@monash.edu>
+#' @author Ryan Thompson
 #'
 #' @description Generate predictions for new data using a given parameter pair \code{(k,h)}.
 #'
@@ -334,7 +335,7 @@ predict.rss <- \(object, x.new, k = NULL, h = NULL, ...) {
 
 #' @title Plot function for rss object
 #'
-#' @author Ryan Thompson <ryan.thompson@monash.edu>
+#' @author Ryan Thompson
 #'
 #' @description Plot the coefficient profiles from robust subset selection.
 #'

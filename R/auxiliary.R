@@ -22,6 +22,19 @@ rob.scale <- \(x, center = TRUE, scale = TRUE) {
   return(x)
 }
 
+# Non-robust scale
+scale2 <- \(x, center = TRUE, scale = TRUE) {
+  if (center) x <- apply(x, 2, \(x) x - base::mean(x))
+  if (scale) {
+    if (center) {
+      x <- apply(x, 2, \(x) x / stats::sd(x))
+    } else {
+      x <- apply(x, 2, \(x) x / sqrt(sum(x ^ 2) / (length(x) - 1)))
+    }
+  }
+  return(x)
+}
+
 # Trimmed mean square prediction error
 tmspe <- \(x, alpha = 0.25) mean(utils::head(sort(x ^ 2), length(x) * (1 - alpha)))
 

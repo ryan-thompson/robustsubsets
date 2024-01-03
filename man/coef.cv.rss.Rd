@@ -24,5 +24,5 @@ An array of coefficients.
 Extracts coefficients for a given parameter pair \code{(k,h)}.
 }
 \author{
-Ryan Thompson <ryan.thompson@monash.edu>
+Ryan Thompson
 }

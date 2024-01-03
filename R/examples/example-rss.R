@@ -10,11 +10,9 @@ e <- rnorm(n, c(rep(10, ncontam), rep(0, n - ncontam)))
 y <- x %*% beta + e
 
 # Robust subset selection
-fit <- rss(x, y, k.mio = p0, h.mio = n - ncontam)
+fit <- rss(x, y, k.mio = p0, h.mio = n - ncontam, params = list(OutputFlag = 1))
 
 # Extract model coefficients, generate predictions, and plot cross-validation results
 coef(fit, k = p0, h = n - ncontam)
 predict(fit, x[1:3, ], k = p0, h = n - ncontam)
 plot(fit)
-
-

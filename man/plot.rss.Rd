@@ -18,5 +18,5 @@ A plot of the coefficient profiles.
 Plot the coefficient profiles from robust subset selection.
 }
 \author{
-Ryan Thompson <ryan.thompson@monash.edu>
+Ryan Thompson
 }

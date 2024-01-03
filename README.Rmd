@@ -17,7 +17,7 @@ An R implementation of [robust subset selection](https://arxiv.org/abs/2005.0821
 Robust subset selection is a robust adaption of the classic best subset selection estimator, and is defined by the constrained least squares problem:
 
 $$
-\min_{\beta, I}~\frac{1}{2}\sum_{i\in I}(y_i-x_i^T\beta)^2\quad~\operatorname{s.t.}\|\beta\|_0\leq k,~I\subseteq\{1,\ldots,n\},~|I|\geq h
+\min_{\beta, I}\,\frac{1}{2}\sum_{i\in I}(y_i-x_i^T\beta)^2\quad\,\operatorname{s.t.}\|\beta\|_0\leq k,\,I\subseteq\{1,\ldots,n\},\,|I|\geq h
 $$
 
 Robust subsets seeks out the best subset of predictors and observations and performs a least squares fit on this subset. The number of predictors used in the fit is controlled by the parameter `k` and the observations by the parameter `h`.
@@ -63,4 +63,4 @@ coef(fit)
 
 ## Documentation
 
-See the package [reference manual](robustsubsets_1.1.1.pdf).
+See the package [reference manual](robustsubsets_1.1.4.pdf).
